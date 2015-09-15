@@ -10,14 +10,11 @@ class MyAgent(spade.Agent.Agent):
 		def _process(self):
 			print "Counter:", self.counter
 			self.counter = self.counter + 1
-			#self.talk()
-			#self.sleep()
-			name = self.getAgent()
 			time.sleep(1)
 
 		def talk(self):
-			receiver = spade.AID.aid(name="motherShip@127.0.0.1", 
-                                     addresses=["xmpp://motherShip@127.0.0.1.com"])
+			receiver = spade.AID.aid(name="asdf", 
+                                     addresses=["xmpp://asdf.com"])
 			
 			# Second, build the message
 			self.msg = spade.ACLMessage.ACLMessage()  # Instantiate the message
@@ -33,10 +30,8 @@ class MyAgent(spade.Agent.Agent):
 		def listen(self):
 			self.msg = None
 			
-			# Blocking receive for 10 seconds
-			self.msg = self._receive(True, 10)
-			
-			# Check wether the message arrived
+			self.msg = self._receive(True, 0)
+
 			if self.msg:
 				print "I got a message!"
 			else:
@@ -49,7 +44,3 @@ class MyAgent(spade.Agent.Agent):
 		print "MyAgent starting . . ."
 		b = self.MyBehav()
 		self.addBehaviour(b, None)
-
-if __name__ == "__main__":
-	a = MyAgent("agent@127.0.0.1", "secret")
-	a.start()
