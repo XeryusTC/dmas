@@ -16,6 +16,8 @@ class GNUI(object):
 		
 		screen = self.drawMap(screen, map)
 
+		screen = self.drawAgents(screen, agents)
+
 		cv2.imshow("GNUI", screen)
 
 		cv2.waitKey(2000)
@@ -28,15 +30,19 @@ class GNUI(object):
 			for item in row:
 				#WALL
 				if item == 1:
-					cv2.rectangle(screen, (jdx * self.size,idx * self.size), (jdx * self.size + self.size - 1, idx * self.size + self.size - 1), (255,0,0), -1)
+					cv2.rectangle(screen, (jdx * self.size,idx * self.size), ((jdx * self.size) + self.size - 1, (idx * self.size) + self.size - 1), (255,0,0), -1)
 				#PATH
 				elif item == 2:
-					cv2.rectangle(screen, (jdx * self.size,idx * self.size), (jdx * self.size + self.size - 1, idx * self.size + self.size - 1), (0,255,0), -1)
+					cv2.rectangle(screen, (jdx * self.size,idx * self.size), ((jdx * self.size) + self.size - 1, (idx * self.size) + self.size - 1), (0,255,0), -1)
 				jdx += 1
 
 			idx += 1
 
 		return screen
 
-	def drawAgent(x,y):
-		pass
+	def drawAgents(self, screen, agents):
+		for agent in agents:
+			y, x = agent
+			cv2.rectangle(screen, (y * self.size,x * self.size), (y * self.size + self.size - 1, x * self.size + self.size - 1), (0,0,255), -1)
+
+		return screen
