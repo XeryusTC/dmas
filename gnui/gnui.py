@@ -18,7 +18,7 @@ class GNUI(object):
 
 		cv2.imshow("GNUI", screen)
 
-		cv2.waitKey(30000)
+		cv2.waitKey(2000)
 
 	def drawMap(self, screen, map):
 		idx = 0
@@ -26,10 +26,12 @@ class GNUI(object):
 		for row in map:
 			jdx = 0
 			for item in row:
-				if item:
-					cv2.rectangle(screen, (jdx * self.size,idx * self.size), (jdx * self.size + self.size, idx * self.size + self.size), (255,0,0), -1)
-				else:
-					pass
+				#WALL
+				if item == 1:
+					cv2.rectangle(screen, (jdx * self.size,idx * self.size), (jdx * self.size + self.size - 1, idx * self.size + self.size - 1), (255,0,0), -1)
+				#PATH
+				elif item == 2:
+					cv2.rectangle(screen, (jdx * self.size,idx * self.size), (jdx * self.size + self.size - 1, idx * self.size + self.size - 1), (0,255,0), -1)
 				jdx += 1
 
 			idx += 1

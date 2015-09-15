@@ -5,6 +5,29 @@ class Maze(object):
     def __init__(self, w = 16, h = 8):
         self.maze = self.make_maze(w, h)
 
+    def getData(self, x, y):
+        data = []
+        #TOP
+        data.append(self.maze[y - 1][x])
+        #TOPRIGHT
+        data.append(self.maze[y - 1][x + 1])
+        #RIGHT
+        data.append(self.maze[y][x + 1])
+        #BOTTOMRIGHT
+        data.append(self.maze[y + 1][x + 1])
+        #BOTTOM
+        data.append(self.maze[y + 1][x])
+        #BOTTOMLEFT
+        data.append(self.maze[y + 1][x - 1])
+        #LEFT
+        data.append(self.maze[y][x - 1])
+        #TOPLEFT
+        data.append(self.maze[y - 1][x - 1])
+
+        data = [2 if x == 0 else 1 for x in data]
+
+        return data
+
     def getMaze(self):
         return self.maze
 
@@ -32,6 +55,6 @@ class Maze(object):
             
         del map[-1]
 
-        print map
+        map[h * 2][1] = 0
         
         return map
