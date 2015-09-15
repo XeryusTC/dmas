@@ -8,3 +8,9 @@ more painful, I had to copy
 `virtualenv/lib/python2.7/site-packages/` to get it working on debian. This
 .so file is installed from the package `python-opencv` from the system's
 package manager.
+
+Starting SPADE can be done by running the following commands:
+```
+configure.py 127.0.0.1
+runspade.py
+```
