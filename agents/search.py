@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 import random
-
+from map.map import Map
 import spade
 
 class SearchAgent(spade.Agent.Agent):
@@ -11,24 +11,30 @@ class SearchAgent(spade.Agent.Agent):
             print("Starting random walk")
 
         def _onTick(self):
-            self.myAgent
-            self.myAgent.sense()
-            print('visited: ', self.myAgent.visited)
-            print('open:    ', self.myAgent.open)
-
             # Create possible directions to move in
             new = [ (self.myAgent.x,   self.myAgent.y-1),
                     (self.myAgent.x,   self.myAgent.y+1),
                     (self.myAgent.x-1, self.myAgent.y),
-                    (self.myAgent.x+1, self.myAgent.x) ]
-            new = random.choice([ n for n in new if n in self.myAgent.open ])
+                    (self.myAgent.x+1, self.myAgent.y) ]
+            new = [ n for n in new if n in self.myAgent.open ]
+            print(new)
+            if len(new):
+                new = random.choice(new)
+            else:
+                new = random.choice(self.myAgent.open)
             self.myAgent.move(new[0], new[1])
+
+            # Update the map
+            self.myAgent.sense()
+            print('visited: ', self.myAgent.visited)
+            print('open:    ', self.myAgent.open)
 
     def _setup(self):
         print("Starting search agent...")
         self.visited = set()
         self.open = set()
-        self.move(len(self.maze.maze) / 2, 1)
+        #self.move(1, self.maze.h * 2)
+        self.move(1, 1)
         rw = self.RandomWalkBehav(1)
         self.addBehaviour(rw, None)
         self.sense()
@@ -41,9 +47,11 @@ class SearchAgent(spade.Agent.Agent):
         try:
             self.open.remove( (x, y) )
         except KeyError:
-            pass
+            print("Position ", (x, y), " not in open list")
         self.x = x
         self.y = y
+        n = self.get_open_neighbours()
+        [ self.open.add(x) for x in n ]
 
     def get_open_neighbours(self):
         n = []
@@ -57,14 +65,17 @@ class SearchAgent(spade.Agent.Agent):
             n.append( (self.x, self.y+1) )
         return n
 
-    def setMaze(self, m):
+    def setMaze(self, m, d):
         self.maze = m
+        self.map = d
 
     def sense(self):
         try:
             d = self.maze.getData(self.x, self.y)
         except AttributeError:
-            return
+            print("Unable to sense data")
+
+        self.map.update(self.x, self.y, d)
 
         pos = [(0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)]
         for i in range(len(d)):
