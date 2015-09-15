@@ -25,12 +25,13 @@ class Maze(object):
                 walk(xx, yy)
  
         walk(randrange(w), randrange(h))
-        
         map = []
         for (a, b) in zip(hor, ver):
-            map.append(list(''.join(a)))
-            map.append(list(''.join(b)))
+            map.append([int(x) for x  in list(''.join(a))])
+            map.append([int(x) for x  in list(''.join(b))])
             
         del map[-1]
+
+        print map
         
         return map
