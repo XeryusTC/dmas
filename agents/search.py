@@ -19,7 +19,7 @@ class SearchAgent(spade.Agent.Agent):
             new = [ n for n in new if n in self.myAgent.open ]
             if len(new):
                 new = random.choice(new)
-            else:
+            else: # Jump to random location if stuck
                 new = random.choice(list(self.myAgent.open))
             self.myAgent.move(new[0], new[1])
 
@@ -34,6 +34,7 @@ class SearchAgent(spade.Agent.Agent):
         self.open = set()
         #self.move(1, self.maze.h * 2)
         self.move(1, 1)
+
         rw = self.RandomWalkBehav(1)
         self.addBehaviour(rw, None)
         self.sense()
@@ -49,20 +50,6 @@ class SearchAgent(spade.Agent.Agent):
             print("Position ", (x, y), " not in open list")
         self.x = x
         self.y = y
-        n = self.get_open_neighbours()
-        [ self.open.add(x) for x in n ]
-
-    def get_open_neighbours(self):
-        n = []
-        if (self.x-1, self.y) in self.open:
-            n.append( (self.x-1, self.y) )
-        if (self.x+1, self.y) in self.open:
-            n.append( (self.x+1, self.y) )
-        if (self.x, self.y-1) in self.open:
-            n.append( (self.x, self.y-1) )
-        if (self.x, self.y+1) in self.open:
-            n.append( (self.x, self.y+1) )
-        return n
 
     def setMaze(self, m, d):
         self.maze = m
