@@ -13,14 +13,14 @@ class GNUI(object):
 
 	def update(self, map, agents):
 		screen = np.zeros((self.height, self.width, 3), 'uint8')
-		
+
 		screen = self.drawMap(screen, map)
 
 		screen = self.drawAgents(screen, agents)
 
 		cv2.imshow("GNUI", screen)
 
-		cv2.waitKey(2000)
+		cv2.waitKey(20)
 
 	def drawMap(self, screen, map):
 		idx = 0

@@ -17,11 +17,10 @@ class SearchAgent(spade.Agent.Agent):
                     (self.myAgent.x-1, self.myAgent.y),
                     (self.myAgent.x+1, self.myAgent.y) ]
             new = [ n for n in new if n in self.myAgent.open ]
-            print(new)
             if len(new):
                 new = random.choice(new)
             else:
-                new = random.choice(self.myAgent.open)
+                new = random.choice(list(self.myAgent.open))
             self.myAgent.move(new[0], new[1])
 
             # Update the map
