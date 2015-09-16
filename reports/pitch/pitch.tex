@@ -11,37 +11,23 @@
 
 \maketitle
 
-\begin{itemize}
-    \item[Problem] Incorporating real world information and internet
-        services.
-    \item[State of the Art] \citet{intframe} and \citet{selforg}.
-    \item[New Idea] Collection of information by a swarm of robots to guide
-        a larger robot through a maze
-    \item[Results] A collaborating team of robots
-    \item[Relevance] Using a swarm for search and rescue
-\end{itemize}
-
-\section*{Problem}
+\subsection*{Problem}
 In both the digital and the real world there is a lot of information.
 Ideally, we would want to use both these sources of information at the same
 time. At the moment there is no real good way to do that, but we believe
 that the framework of multi-agent systems can be used as a perfect bridge
 between these two worlds. 
 
-\section*{State of the Art}
+\subsection*{State of the Art}
 This was done in \citet{intframe}. Here a robot was directed towards
-a target location using an external path planning service. We want to
-expand upon this idea by using a swarm to collect information that the path
-planning algorithm can use.
+a target location using an external path planning service which was
+supposed to be accessed over the internet. 
 
-This is similar to the research done in \citet{selforg}, were two kinds of
-robots were used to plan a path through an obstructed environment. The
-difference between this research and our research is that in
-\citet{selforg} there was a large focus on self organisation, while we will
-build a more organized system to incorporate elements from the digital
-world. 
+Since we want to imporve on this in the context of Swarm robotics, we also
+found \citet{selforg}, were two kinds of robots were used to plan a path
+through an obstructed environment. 
 
-\section*{New idea}
+\subsection*{New idea}
 Our new idea is to incorporate these two ideas to build a simulation that uses
 smaller search robots to collect information about a maze. This information will
 then be handed over to the path planning agents to build a path for larger
@@ -53,11 +39,11 @@ This expands on the ideas of
 information and services. It will expand on \citet{selforg} because it is a
 different way to make a heterogeneous group of robots.
 
-\section*{Results}
+\subsection*{Results}
 The result will be a collaborating team of heterogeneous robots that
 combine real world information and digital information. 
 
-\section*{Relevance}
+\subsection*{Relevance}
 This is relevant because better search and rescue techniques will be able
 to save more people faster. It should also tell us more about incorperating
 information in the real and digital worlds. 
