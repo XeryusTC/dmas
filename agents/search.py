@@ -14,11 +14,9 @@ class SearchAgent(spade.Agent.Agent):
 
         def _onTick(self):
             # Create possible directions to move in
-            new = [ (self.myAgent.x,   self.myAgent.y-1),
-                    (self.myAgent.x,   self.myAgent.y+1),
-                    (self.myAgent.x-1, self.myAgent.y),
-                    (self.myAgent.x+1, self.myAgent.y) ]
-            new = [ n for n in new if n in self.myAgent.open ]
+            moves = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+            new = [(self.myAgent.x+x, self.myAgent.y+y) for (x, y) in moves
+                   if (self.myAgent.x+x,self.myAgent.y+y) in self.myAgent.open]
             if len(new):
                 new = random.choice(new)
             else: # Jump to random location if stuck
