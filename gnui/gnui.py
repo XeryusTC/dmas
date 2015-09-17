@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 
+from maze import maze
+
 class GNUI(object):
 
 	def __init__(self, w, h):
@@ -29,10 +31,10 @@ class GNUI(object):
 			jdx = 0
 			for item in row:
 				#WALL
-				if item == 1:
+				if item == maze.WALL:
 					cv2.rectangle(screen, (jdx * self.size,idx * self.size), ((jdx * self.size) + self.size - 1, (idx * self.size) + self.size - 1), (255,0,0), -1)
 				#PATH
-				elif item == 2:
+				elif item == maze.PATH_VISITED:
 					cv2.rectangle(screen, (jdx * self.size,idx * self.size), ((jdx * self.size) + self.size - 1, (idx * self.size) + self.size - 1), (0,255,0), -1)
 				jdx += 1
 

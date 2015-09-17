@@ -1,5 +1,9 @@
 from random import shuffle, randrange
 
+PATH = 0
+WALL = 1
+PATH_VISITED = 2
+
 class Maze(object):
 
     def __init__(self, w = 16, h = 8):
@@ -26,7 +30,7 @@ class Maze(object):
         #TOPLEFT
         data.append(self.maze[y - 1][x - 1])
 
-        data = [2 if x == 0 else 1 for x in data]
+        data = [PATH_VISITED if x == PATH else WALL for x in data]
 
         return data
 

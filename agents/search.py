@@ -4,6 +4,8 @@ import random
 from map.map import Map
 import spade
 
+from maze import maze
+
 class SearchAgent(spade.Agent.Agent):
 
     class RandomWalkBehav(spade.Behaviour.PeriodicBehaviour):
@@ -65,7 +67,7 @@ class SearchAgent(spade.Agent.Agent):
 
         pos = [(0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)]
         for i in range(len(d)):
-            if d[i] == 2:
+            if d[i] == maze.PATH_VISITED:
                 x = self.x + pos[i][0]
                 y = self.y + pos[i][1]
                 if (x, y) not in self.visited:
