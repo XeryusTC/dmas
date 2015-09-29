@@ -21,7 +21,9 @@ if __name__ == "__main__":
 
         for i in range(1000):
             time.sleep(.1)
-            display.update(globalMap.getMap(), [(a.x, a.y)])
+            display.update(globalMap.getMap(), [a.position])
+    except KeyboardInterrupt:
+        pass
     except Exception, ex:
         print traceback.format_exc()
     finally:

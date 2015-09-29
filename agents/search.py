@@ -70,3 +70,7 @@ class SearchAgent(spade.Agent.Agent):
                 y = self.y + pos[i][1]
                 if (x, y) not in self.visited:
                     self.open.add( (x, y) )
+
+    @property
+    def position(self):
+        return (self.x, self.y)
