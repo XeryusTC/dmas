@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import random
-from map.map import Map
 import spade
 
 from maze import maze
@@ -51,9 +50,8 @@ class SearchAgent(spade.Agent.Agent):
         self.x = x
         self.y = y
 
-    def setMaze(self, m, d):
+    def setMaze(self, m):
         self.maze = m
-        self.map = d
 
     def sense(self):
         try:
@@ -61,7 +59,13 @@ class SearchAgent(spade.Agent.Agent):
         except AttributeError:
             print("Unable to sense data")
 
-        self.map.update(self.x, self.y, d)
+        # send data to the database agent
+        msg = spade.ACLMessage.ACLMessage()
+        msg.setPerformative("inform")
+        msg.addReceiver(spade.AID.aid("db@127.0.0.1",
+            ["xmpp://db@127.0.0.1"]))
+        msg.setContent({'pos': self.position, 'data': d})
+        self.send(msg)
 
         pos = [(0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)]
         for i in range(len(d)):
