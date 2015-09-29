@@ -6,6 +6,7 @@ import spade
 from maze import maze
 
 class SearchAgent(spade.Agent.Agent):
+    is_setup = False
 
     class RandomWalkBehav(spade.Behaviour.PeriodicBehaviour):
         def onStart(self):
@@ -24,11 +25,9 @@ class SearchAgent(spade.Agent.Agent):
 
             # Update the map
             self.myAgent.sense()
-            print('visited: ', self.myAgent.visited)
-            print('open:    ', self.myAgent.open)
 
     def _setup(self):
-        print("Starting search agent...")
+        print("Starting search agent {}...".format(self.name))
         self.visited = set()
         self.open = set()
         #self.move(1, self.maze.h * 2)
@@ -37,9 +36,10 @@ class SearchAgent(spade.Agent.Agent):
         rw = self.RandomWalkBehav(1)
         self.addBehaviour(rw, None)
         self.sense()
+        self.is_setup = True
 
     def takeDown(self):
-        print("Stopping search agent...")
+        print("Stopping search agent {}...".format(self.name))
 
     def move(self, x, y):
         self.visited.add( (x, y) )

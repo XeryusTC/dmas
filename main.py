@@ -8,6 +8,7 @@ from agents.db import DatabaseAgent
 
 WIDTH  = 32
 HEIGHT = 16
+SEARCH = range(3)
 
 if __name__ == "__main__":
     m = Maze(WIDTH, HEIGHT)
@@ -15,23 +16,31 @@ if __name__ == "__main__":
 
     display.update(m.getMaze(), [])
 
-    a = SearchAgent("search@127.0.0.1", "secret")
+    search = [SearchAgent("search{}@127.0.0.1".format(i), "secret")
+            for i in SEARCH]
     db = DatabaseAgent("db@127.0.0.1", "secret")
     db.width  = WIDTH
     db.height = HEIGHT
 
     try:
         db.start()
-        a.setMaze(m)
-        a.start()
+        for s in search:
+            s.setMaze(m)
 
         for i in range(1000):
+            # Wait two seconds between starting each search bot
+            if i % 20 == 0 and i/20 < len(search):
+                search[i/20].start()
+
+            display.update(db.map.getMap(),
+                    [s.position for s in search if s.is_setup])
             time.sleep(.1)
-            display.update(db.map.getMap(), [a.position])
     except KeyboardInterrupt:
         pass
     except Exception, ex:
         print traceback.format_exc()
-    finally:
-        a.stop()
-        db.stop()
+
+    # stop all agents
+    for s in search:
+        s.stop()
+    db.stop()

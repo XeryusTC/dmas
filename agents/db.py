@@ -16,7 +16,7 @@ class DatabaseAgent(spade.Agent.Agent):
                 self.myAgent.map.update(pos[0], pos[1], data)
 
     def _setup(self):
-        print("Starting DatabaseAgent...")
+        print("Starting DatabaseAgent {}...".format(self.name))
         self.map = Map(self.width, self.height)
 
         template = spade.Behaviour.ACLTemplate()
@@ -27,3 +27,6 @@ class DatabaseAgent(spade.Agent.Agent):
 
         sd = self.StoreDataBehaviour(.1)
         self.addBehaviour(sd, t)
+
+    def takeDown(self):
+        print("Stopping database agent {}...".format(self.name))
