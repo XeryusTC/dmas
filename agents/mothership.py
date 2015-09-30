@@ -58,6 +58,12 @@ class Mothership(spade.Agent.Agent):
             self.searchers[-1].setShip(self)
         self.is_setup = True
 
+    def takeDown(self):
+        print("Stopping Searchers")
+        for search in self.searchers:
+            search.stop()
+        print("Stopping MotherShip {}...".format(self.name))
+
     def addOpen(self, location):
         """Add a new open location to the list of open locations"""
         if location not in self.visited:
