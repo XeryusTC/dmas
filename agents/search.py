@@ -9,35 +9,48 @@ class SearchAgent(spade.Agent.Agent):
     is_setup = False
 
     class RandomWalkBehav(spade.Behaviour.PeriodicBehaviour):
+        moves = [(0, -1), (0, 1), (-1, 0), (1, 0)]
         def onStart(self):
             print("Starting random walk")
+            self.waiting = False
 
         def _onTick(self):
-            # Create possible directions to move in
-            print(self.myAgent.open)
-            moves = [(0, -1), (0, 1), (-1, 0), (1, 0)]
-            new = [(self.myAgent.x+x, self.myAgent.y+y) for (x, y) in moves
-                   if (self.myAgent.x+x,self.myAgent.y+y) in self.myAgent.open]
-            if len(new) == 1:
-                new = new[0]
-                self.myAgent.move(new[0], new[1])
-            else: # Request path from MotherShip
-                print("Request")
-                '''
-                msg = spade.ACLMessage.ACLMessage()
-                msg.setPerformative("request")
-                msg.setOntology("searcher")
-                msg.addReceiver(self.myAgent.ship.getAID())
-                msg.setContent( (self.myAgent.x, self.myAgent.y) )
-                self.myAgent.send(msg)
-                reply = self._receive(True)
-                if reply:
-                    new = eval(reply.getContent())
+            if self.waiting:
+                msg = self._receive(False)
+                if msg:
+                    content = msg.getContent().split(' ', 1)
+                    if content[0] == "route":
+                        route = eval(content[1])
+                        self.myAgent.route = route
+                        self.waiting = False
+                    else:
+                        reply = msg.createReply()
+                        reply.setPerformative(reply.NOT_UNDERSTOOD)
+                        self.myAgent.send(reply)
+                        return
                 else:
                     return
-                '''
-            
-
+            r = self.myAgent.route
+            if len(r):
+                (x, y) = r[0]
+                self.myAgent.move(x, y)
+                self.myAgent.route = r[1:]
+            else:
+                new = [(self.myAgent.x+x, self.myAgent.y+y) 
+                        for (x, y) in self.moves
+                        if (self.myAgent.x+x,self.myAgent.y+y) 
+                                in self.myAgent.open]
+                if len(new) == 1:
+                    (x, y) = new[0]
+                    self.myAgent.move(x, y)
+                else:
+                    msg = spade.ACLMessage.ACLMessage()
+                    msg.setPerformative(msg.REQUEST)
+                    msg.setOntology("searcher")
+                    msg.addReceiver(self.myAgent.ship.getAID())
+                    msg.setContent( (self.myAgent.x, self.myAgent.y) )
+                    self.myAgent.send(msg)
+                    self.waiting = True
             # Update the map
             self.myAgent.sense()
 
@@ -45,6 +58,7 @@ class SearchAgent(spade.Agent.Agent):
         print("Starting search agent {}...".format(self.name))
         self.visited = set()
         self.open = set()
+        self.route = []
         #self.move(1, self.maze.h * 2)
         self.move(1, 1)
 

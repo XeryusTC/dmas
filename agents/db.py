@@ -11,8 +11,7 @@ class DatabaseAgent(spade.Agent.Agent):
         def _onTick(self):
             msg = self._receive(False)
 
-            while msg:
-
+            if msg:
                 perf = msg.getPerformative()
 
                 if perf == "inform":
@@ -21,25 +20,25 @@ class DatabaseAgent(spade.Agent.Agent):
                     data = content['data']
                     self.myAgent.map.update(pos[0], pos[1], data)
 
-
     class RequestInformationBehaviour(spade.Behaviour.PeriodicBehaviour):
         def _onTick(self):
-
             msg = None
             msg = self._receive(False)
-            print(msg)
             if msg:
+                data = None
                 print("DB received message: {}".format(msg))
                 print(msg.getContent())
-                content = eval(msg.getContent())
-                data = self.myAgent.map.getData(content['x'], content['y'])
-                rep = spade.ACLMessage.ACLMessage()
+                if msg.getContent() == "MAP":
+                    data = self.myAgent.map.getMap()
+                else:
+                    content = eval(msg.getContent())
+                    data = self.myAgent.map.getData(content['x'], content['y'])
+                rep = msg.createReply()
                 rep.setPerformative("inform")
-                rep.addReceiver(msg.getSender())
-                rep.setContent(data)
+                rep.setContent("map {}".format(data))
                 self.myAgent.send(rep)
-                print("Sending data for ({}, {}) to {}".
-                        format(content['x'], content['y'], msg.getSender()))
+                print("Sending data to {}".
+                        format(msg.getSender()))
 
     def _setup(self):
         print("Starting DatabaseAgent {}...".format(self.name))
