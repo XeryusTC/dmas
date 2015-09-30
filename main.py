@@ -24,6 +24,9 @@ if __name__ == "__main__":
 
     try:
         db.start()
+        while not db.is_setup:
+            pass
+
         for s in search:
             s.setMaze(m)
 

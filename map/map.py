@@ -28,5 +28,10 @@ class Map(object):
         #TOPLEFT
         self.map[y - 1][x - 1] = data[7]
 
+    def getData(self, x, y):
+        return [self.map[y + dy][x + dx]
+                for (dy, dx) in [(-1, 0), (-1, 1), (0, 1), (1,1),(1,0),(1, -1),
+                                    (0,-1), (-1, -1)]]
+
     def getMap(self):
         return self.map

@@ -5,6 +5,8 @@ from map.map import Map
 
 class DatabaseAgent(spade.Agent.Agent):
     """Agent that keeps track of the map"""
+    is_setup = False
+
     class StoreDataBehaviour(spade.Behaviour.PeriodicBehaviour):
         def _onTick(self):
             msg = self._receive(False)
@@ -14,6 +16,23 @@ class DatabaseAgent(spade.Agent.Agent):
                 pos = content['pos']
                 data = content['data']
                 self.myAgent.map.update(pos[0], pos[1], data)
+
+    class RequestInformationBehaviour(spade.Behaviour.PeriodicBehaviour):
+        def _onTick(self):
+            msg = None
+            msg = self._receive(False)
+
+            if msg:
+                print("DB received message: {}".format(msg))
+                content = eval(msg.getContent())
+                data = self.myAgent.map.getData(content['x'], content['y'])
+                rep = spade.ACLMessage.ACLMessage()
+                rep.setPerformative("inform")
+                rep.addReceiver(msg.getSender())
+                rep.setContent(data)
+                self.myAgent.send(rep)
+                print("Sending data for ({}, {}) to {}".
+                        format(content['x'], content['y'], msg.getSender()))
 
     def _setup(self):
         print("Starting DatabaseAgent {}...".format(self.name))
@@ -27,6 +46,15 @@ class DatabaseAgent(spade.Agent.Agent):
 
         sd = self.StoreDataBehaviour(.1)
         self.addBehaviour(sd, t)
+
+        replyTemp = spade.Behaviour.ACLTemplate()
+        replyTemp.setPerformative("request")
+        temp = spade.Behaviour.MessageTemplate(replyTemp)
+
+        rb = self.RequestInformationBehaviour(.1)
+        self.addBehaviour(rb, temp)
+        
+        self.is_setup = True
 
     def takeDown(self):
         print("Stopping database agent {}...".format(self.name))
