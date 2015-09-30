@@ -18,7 +18,7 @@ class Mothership(spade.Agent.Agent):
                     status = self.myAgent.queue[convId]
                 except Exception as e:
                     print(e)
-                    return 
+                    return
                 print(status)
                 if not status['map']:
                     if content[0] == "map":
@@ -74,6 +74,7 @@ class Mothership(spade.Agent.Agent):
                         self.myAgent.send(reply)
                         print("Send Reply: {}".format(new))
                     else: # Get a route to a point on the open list
+                        print("Requesting path to point")
                         dbMsg = spade.ACLMessage.ACLMessage(msg.REQUEST)
                         dbMsg.setOntology("map")
                         dbMsg.addReceiver(spade.AID.aid("db@127.0.0.1",
