@@ -3,8 +3,8 @@
 \usepackage{hyperref}
 
 \title{\textbf{\huge Project Report}}
-\author{Anton Mulder \and Xeryus Stokkel \and Angelo Karountzos \and Ren\'e
-    Mellema}
+\author{Anton Mulder (s2215993) \and Xeryus Stokkel (s2332795) \and Angelo
+    Karountzos (s2705532) \and Ren\'e Mellema (s2348802)}
 \date{University of Groningen}
 
 \pagestyle{empty}
@@ -18,38 +18,16 @@
 \end{abstract}
 
 \section{Introduction}
-In modern times, a lot of information is spread out among many sources.
-One of these sources is the internet, where a large collection of 
-\subsection{Problem}
-\subsection{State of the Art}
-\cite{intframe}.
-\subsection{New Idea}
+\input{introduction}
 
 \section{Method}
-\subsection{Simulation Model}
-Our simulation consists of two web services, two soft bots and a supervisor.
-The web services are a data store and a path planner. The data store is used
-to store the map, while the path planner can be given a map, a starting
-point and a target location. The soft bots are the searchers and the
-rescuers. The searchers explore the maze with help from the supervisor,
-while the rescuers are sent into the maze to collect the targets. The
-supervisor is the link between all these components. It gets the data about
-the map from the searchers and forwards it to the data store. 
-
-When a searcher gets stuck, the supervisor requests the current map. It
-then gives the map, the location of the stuck searcher and a position that
-has not been visited yet to the path planner. The planner will return a
-path if it is possible. The supervisor then sends this path to the searcher
-so it can resume its quest.
-\subsection{Experimental design}
+\input{method}
 
 \section{Results}
-\subsection{Experimental Findings}
-\subsection{Interpretation}
+\input{results}
 
 \section{Conclusion}
-\subsection{Discussion}
-\subsection{Relevance}
+\input{conclusion}
 
 \bibliographystyle{plain}
 \bibliography{references}

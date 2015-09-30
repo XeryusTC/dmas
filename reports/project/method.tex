@@ -1,0 +1,52 @@
+Our simulation consists of a set of soft bots that try to explore a
+randomly generated maze. They use a set of web services to accomplice this
+task together. 
+
+\subsection{Simulation Model}
+The simulation consists of two web services, two soft bots and a supervisor.
+The web services are a data store and a path planner. The data store is used
+to store the map, while the path planner can be given a map, a starting
+point and a target location. The soft bots are the searchers and the
+rescuers. The searchers explore the maze with help from the supervisor,
+while the rescuers are sent into the maze to collect the targets. The
+supervisor is the link between all these components. It also keeps track of
+the already visited locations and the still unexplored locations that can
+be reached. The supervisor also makes sure that the searchers are not all
+at the some location.
+
+\subsubsection{Data Store}
+The data store represents a web service that allows you to store raw data.
+It can be updated and queried 
+
+\subsubsection{Path planner}
+The path planner represents a web service that uses the A* algorithm
+\cite{astar} to plan a route through a grid based maze, such as
+\cite{astarweb}.
+
+\subsubsection{Searchers}
+The searchers represent robots that can be used for searching through
+buildings. They travel through the maze along the straight corridors until
+they reach a fork in the maze. Then they call upon the supervisor to give
+them a new target to travel to and explore. If they get stuck in a
+corridor, they will go through the same process
+
+\subsubsection{Supervisor}
+The Supervisor is the central part of the system that makes sure that all
+the components work together. It manages all communication between the
+separate components and translates the messages that the components send to
+each other. It also manages all the searchers and makes sure that they
+don't all try to explore the same area.
+
+\subsubsection{Interaction}
+Every time the searcher uncovers a new location, it will send a message to
+the supervisor. The supervisor will then relay this information to the data
+store to store. This information can later be retrieved.
+
+When a searcher gets stuck, it reports its current location to the
+supervisor. The supervisor then requests the current map. Then it sends the
+map, the location of the stuck searcher and a position that has not been
+visited yet to the path planner. The planner will return a path if it is
+possible. The supervisor then sends this path to the searcher so it can
+resume exploring.
+
+\subsection{Experimental design}
