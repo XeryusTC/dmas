@@ -48,10 +48,5 @@ if __name__ == "__main__":
         print traceback.format_exc()
 
     # stop all agents
-    try:
-        for s in mother.searchers:
-            s.stop()
-    except:
-        pass
     db.stop()
     mother.stop()
