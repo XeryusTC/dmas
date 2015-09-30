@@ -1,15 +1,34 @@
-from random import shuffle, randrange
+from random import shuffle, randrange, randint
 
 PATH = 0
 WALL = 1
 PATH_VISITED = 2
+TARGET = 3
 
 class Maze(object):
 
-    def __init__(self, w = 16, h = 8):
+    def __init__(self, w = 16, h = 8, targets = 10):
         self.w = w
         self.h = h
         self.maze = self.make_maze(w, h)
+        self._addTargets(10)
+
+    def _addTargets(self, targets):
+        for i in xrange(0, targets):
+            
+            searching = True
+            while searching:
+                y = randint(0,self.h * 2)
+                x = randint(0,self.w * 2)
+
+                if self.maze[y][x] == PATH:
+                    self.maze[y][x] = TARGET
+                    searching = False
+            
+            
+
+
+
 
     def getData(self, x, y):
         data = []
@@ -30,7 +49,7 @@ class Maze(object):
         #TOPLEFT
         data.append(self.maze[y - 1][x - 1])
 
-        data = [PATH_VISITED if x == PATH else WALL for x in data]
+        data = [PATH_VISITED if x == PATH  else x for x in data]
 
         return data
 

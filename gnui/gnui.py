@@ -36,7 +36,11 @@ class GNUI(object):
 				#PATH
 				elif item == maze.PATH_VISITED:
 					cv2.rectangle(screen, (jdx * self.size,idx * self.size), ((jdx * self.size) + self.size - 1, (idx * self.size) + self.size - 1), (0,255,0), -1)
+				#PATH
+				elif item == maze.TARGET:
+					cv2.rectangle(screen, (jdx * self.size,idx * self.size), ((jdx * self.size) + self.size - 1, (idx * self.size) + self.size - 1), (0,255,255), -1)
 				jdx += 1
+
 
 			idx += 1
 

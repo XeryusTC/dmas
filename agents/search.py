@@ -14,6 +14,7 @@ class SearchAgent(spade.Agent.Agent):
 
         def _onTick(self):
             # Create possible directions to move in
+            print(self.myAgent.open)
             moves = [(0, -1), (0, 1), (-1, 0), (1, 0)]
             new = [(self.myAgent.x+x, self.myAgent.y+y) for (x, y) in moves
                    if (self.myAgent.x+x,self.myAgent.y+y) in self.myAgent.open]
@@ -69,7 +70,7 @@ class SearchAgent(spade.Agent.Agent):
 
         pos = [(0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)]
         for i in range(len(d)):
-            if d[i] == maze.PATH_VISITED:
+            if d[i] == maze.PATH_VISITED or d[i] == maze.TARGET:
                 x = self.x + pos[i][0]
                 y = self.y + pos[i][1]
                 if (x, y) not in self.visited:
