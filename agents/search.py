@@ -18,10 +18,20 @@ class SearchAgent(spade.Agent.Agent):
             moves = [(0, -1), (0, 1), (-1, 0), (1, 0)]
             new = [(self.myAgent.x+x, self.myAgent.y+y) for (x, y) in moves
                    if (self.myAgent.x+x,self.myAgent.y+y) in self.myAgent.open]
-            if len(new):
-                new = random.choice(new)
-            else: # Jump to random location if stuck
-                new = random.choice(list(self.myAgent.open))
+            if len(new) == 1:
+                new = new[0]
+            else: # Request path from MotherShip
+                msg = spade.ACLMessage.ACLMessage()
+                msg.setPerformative("request")
+                msg.setOntology("searcher")
+                msg.addReceiver(self.myAgent.ship.getAID())
+                msg.setContent( (self.myAgent.x, self.myAgent.y) )
+                self.myAgent.send(msg)
+                reply = self._receive(True)
+                if reply:
+                    new = eval(reply.getContent())
+                else:
+                    return
             self.myAgent.move(new[0], new[1])
 
             # Update the map
@@ -35,7 +45,10 @@ class SearchAgent(spade.Agent.Agent):
         self.move(1, 1)
 
         rw = self.RandomWalkBehav(1)
-        self.addBehaviour(rw, None)
+        temp = spade.Behaviour.ACLTemplate()
+        temp.setOntology("searcher")
+        rt = spade.Behaviour.MessageTemplate(temp)
+        self.addBehaviour(rw, rt)
         self.sense()
         self.is_setup = True
 
@@ -50,6 +63,15 @@ class SearchAgent(spade.Agent.Agent):
             print("Position ", (x, y), " not in open list")
         self.x = x
         self.y = y
+        msg = spade.ACLMessage.ACLMessage()
+        msg.setPerformative("inform")
+        msg.setOntology("searcher")
+        msg.addReceiver(self.ship.getAID())
+        msg.setContent("visited {}".format( (x, y) ))
+        self.send(msg)
+
+    def setShip(self, s):
+        self.ship = s
 
     def setMaze(self, m):
         self.maze = m
@@ -69,12 +91,21 @@ class SearchAgent(spade.Agent.Agent):
         self.send(msg)
 
         pos = [(0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)]
+        openlist = []
         for i in range(len(d)):
             if d[i] == maze.PATH_VISITED or d[i] == maze.TARGET:
                 x = self.x + pos[i][0]
                 y = self.y + pos[i][1]
                 if (x, y) not in self.visited:
                     self.open.add( (x, y) )
+                    openlist.append( (x, y) )
+        if len(openlist):
+            msg = spade.ACLMessage.ACLMessage()
+            msg.setPerformative("inform")
+            msg.setOntology("searcher")
+            msg.addReceiver(self.ship.getAID())
+            msg.setContent("opened {}".format(openlist))
+            self.send(msg)
 
     @property
     def position(self):
