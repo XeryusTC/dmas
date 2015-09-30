@@ -20,7 +20,10 @@ class SearchAgent(spade.Agent.Agent):
                    if (self.myAgent.x+x,self.myAgent.y+y) in self.myAgent.open]
             if len(new) == 1:
                 new = new[0]
+                self.myAgent.move(new[0], new[1])
             else: # Request path from MotherShip
+                print("Request")
+                '''
                 msg = spade.ACLMessage.ACLMessage()
                 msg.setPerformative("request")
                 msg.setOntology("searcher")
@@ -32,7 +35,8 @@ class SearchAgent(spade.Agent.Agent):
                     new = eval(reply.getContent())
                 else:
                     return
-            self.myAgent.move(new[0], new[1])
+                '''
+            
 
             # Update the map
             self.myAgent.sense()

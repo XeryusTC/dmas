@@ -11,19 +11,26 @@ class DatabaseAgent(spade.Agent.Agent):
         def _onTick(self):
             msg = self._receive(False)
 
-            if msg:
-                content = eval(msg.getContent())
-                pos = content['pos']
-                data = content['data']
-                self.myAgent.map.update(pos[0], pos[1], data)
+            while msg:
+
+                perf = msg.getPerformative()
+
+                if perf == "inform":
+                    content = eval(msg.getContent())
+                    pos = content['pos']
+                    data = content['data']
+                    self.myAgent.map.update(pos[0], pos[1], data)
+
 
     class RequestInformationBehaviour(spade.Behaviour.PeriodicBehaviour):
         def _onTick(self):
+
             msg = None
             msg = self._receive(False)
-
+            print(msg)
             if msg:
                 print("DB received message: {}".format(msg))
+                print(msg.getContent())
                 content = eval(msg.getContent())
                 data = self.myAgent.map.getData(content['x'], content['y'])
                 rep = spade.ACLMessage.ACLMessage()

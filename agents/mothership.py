@@ -25,6 +25,23 @@ class Mothership(spade.Agent.Agent):
                         for loc in new:
                             self.myAgent.addOpen(loc)
                 elif perf == "request":
+                    print("request")
+                    
+                    msg = spade.ACLMessage.ACLMessage()
+                    msg.setPerformative("request")
+                    msg.setOntology("searcher")
+                    msg.addReceiver(spade.AID.aid("db@127.0.0.1", ["xmpp://db@127.0.0.1"]))
+                    msg.setContent("MAP")
+                    self.myAgent.send(msg)
+
+                
+                    print("Mothership")
+                    
+                    
+
+
+
+                    '''
                     loc = eval(msg.getContent())
                     new = [(loc[0] + x, loc[1] + y) for (x, y) in self.moves
                             if (loc[0] + x, loc[1] + y) in list(self.myAgent.open)]
@@ -38,7 +55,8 @@ class Mothership(spade.Agent.Agent):
                     reply.addReceiver(msg.getSender())
                     reply.setContent(new)
                     self.myAgent.send(reply)
-                msg = self._receive(False)
+                    '''
+                #msg = self._receive(False)
 
     def _setup(self):
         print("Starting MotherShip {}".format(self.name))
