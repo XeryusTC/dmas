@@ -11,12 +11,14 @@ class SearchAgent(spade.Agent.Agent):
     PATH_WALK_CODE     = 2
     PICK_CORRIDOR_CODE = 3
     WAIT_FOR_PATH_CODE = 4
+    DISCOVER_CODE      = 5
 
     TRANS_DEFAULT       = 0
     TRANS_CORRIDOR_WALK = 10
     TRANS_PATH_WALK     = 20
     TRANS_PICK_CORRIDOR = 30
     TRANS_WAIT_FOR_PATH = 40
+    TRANS_DISCOVER      = 50
 
     TIMEOUT = 1 # wait between proccessing oneshots
 
@@ -95,6 +97,35 @@ class SearchAgent(spade.Agent.Agent):
             time.sleep(self.myAgent.TIMEOUT)
 
 
+    class DiscoverServicesBehav(spade.Behaviour.OneShotBehaviour):
+        # DISCOVER_CODE
+        def onStart(self):
+            print("Starting service discovery")
+
+        def _process(self):
+            # Discover mothership (if present)
+            sd = spade.DF.ServiceDescription()
+            sd.setType("mothership")
+            dad = spade.DF.DfAgentDescription()
+            dad.addService(sd)
+
+            result = self.myAgent.searchService(dad)
+            if len(result):
+                print(self.myAgent.name, "switching to mothership")
+#                self.myAgent.ship = result[0].getAID()
+
+            # Discover pathfinders
+            sd = spade.DF.ServiceDescription()
+            sd.setType("pathfinder")
+            dad = spade.DF.DfAgentDescription()
+            dad.addService(sd)
+
+            result = self.myAgent.searchService(dad)
+            print("Services found:", [r.asContentObject() for r in result])
+
+            self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
+
+
     def _setup(self):
         print("Starting search agent {}...".format(self.name))
         self.visited = set()
@@ -109,12 +140,15 @@ class SearchAgent(spade.Agent.Agent):
         rt = spade.Behaviour.MessageTemplate(temp)
         #self.addBehaviour(rw, rt)
         b = spade.Behaviour.FSMBehaviour()
-        b.registerFirstState(self.PickPathBehav(), self.PICK_CORRIDOR_CODE)
+        b.registerFirstState(self.DiscoverServicesBehav(), self.DISCOVER_CODE)
+        b.registerState(self.PickPathBehav(),     self.PICK_CORRIDOR_CODE)
         b.registerState(self.WalkCorridorBehav(), self.CORRIDOR_WALK_CODE)
-        b.registerState(self.WaitForPathBehav(), self.WAIT_FOR_PATH_CODE)
-        b.registerState(self.PathWalkBehav(), self.PATH_WALK_CODE)
+        b.registerState(self.WaitForPathBehav(),  self.WAIT_FOR_PATH_CODE)
+        b.registerState(self.PathWalkBehav(),     self.PATH_WALK_CODE)
 
         b.rT = b.registerTransition
+        b.rT(self.DISCOVER_CODE,      self.DISCOVER_CODE,      self.TRANS_DEFAULT)
+        b.rT(self.DISCOVER_CODE,      self.PICK_CORRIDOR_CODE, self.TRANS_PICK_CORRIDOR)
         b.rT(self.PICK_CORRIDOR_CODE, self.WAIT_FOR_PATH_CODE, self.TRANS_WAIT_FOR_PATH)
         b.rT(self.CORRIDOR_WALK_CODE, self.CORRIDOR_WALK_CODE, self.TRANS_DEFAULT)
         b.rT(self.CORRIDOR_WALK_CODE, self.PICK_CORRIDOR_CODE, self.TRANS_PICK_CORRIDOR)

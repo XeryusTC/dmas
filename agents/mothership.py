@@ -11,8 +11,6 @@ class Mothership(spade.Agent.Agent):
         def _onTick(self):
             msg = self._receive(False)
             while msg:
-                #print("Got Reply!")
-                
                 try:
                     convId = int(msg.getConversationId())
                     content = msg.getContent().split(' ', 1)
@@ -94,14 +92,38 @@ class Mothership(spade.Agent.Agent):
                             self.myAgent.send(dbMsg)
                         except Exception, e:
                             print(e)
-                        
+
                 msg = self._receive(False)
+
+
+    class RegisterServicesBehav(spade.Behaviour.OneShotBehaviour):
+        def onSetup(self):
+            print("Registering mothership services")
+
+        def _process(self):
+            dad = spade.DF.DfAgentDescription()
+            sd = spade.DF.ServiceDescription()
+            sd.setType("mothership")
+            sd.setName("mothership")
+            dad.addService(sd)
+
+            sd = spade.DF.ServiceDescription()
+            sd.setType("pathfinder")
+            sd.setName("mothership")
+            dad.addService(sd)
+
+            dad.setAID(self.myAgent.getAID())
+            res = self.myAgent.registerService(dad)
+            print("Mothership registered:", str(res))
+
 
     def _setup(self):
         print("Starting MotherShip {}".format(self.name))
         self.visited = set()
         self.open    = set()
         self.queue = {}
+
+        self.addBehaviour(self.RegisterServicesBehav(), None)
 
         searchTemp = spade.Behaviour.ACLTemplate()
         searchTemp.setOntology("searcher")
