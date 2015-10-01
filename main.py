@@ -10,7 +10,7 @@ from agents.pathfinder import PathFinder
 
 WIDTH  = 32
 HEIGHT = 16
-SEARCH = range(3)
+SEARCHERS = range(3)
 
 if __name__ == "__main__":
     m = Maze(WIDTH, HEIGHT)
@@ -33,12 +33,12 @@ if __name__ == "__main__":
             pass
 
         print "Starting searchers"
-        search = mother.searchers
+        search = [SearchAgent("search{}@127.0.0.1".format(i), "secret")
+                for i in SEARCHERS]
         for s in search:
             s.setMaze(m)
 
         for i in range(100000):
-            search = mother.searchers
             # Wait two seconds between starting each search bot
             if i % 20 == 0 and i/20 < len(search):
                 search[i/20].start()
@@ -55,3 +55,5 @@ if __name__ == "__main__":
     db.stop()
     mother.stop()
     pathfinder.stop()
+    for s in search:
+        s.stop()

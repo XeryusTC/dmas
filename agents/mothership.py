@@ -137,17 +137,9 @@ class Mothership(spade.Agent.Agent):
         rm = self.RouteManager(.1)
         self.addBehaviour(rm, rt)
 
-        self.searchers = []
-        for i in range(4):
-            self.searchers.append(SearchAgent("search{}@127.0.0.1".format(i),
-                                                "secret"))
-            self.searchers[-1].setShip(self)
         self.is_setup = True
 
     def takeDown(self):
-        print("Stopping Searchers")
-        for search in self.searchers:
-            search.stop()
         print("Stopping MotherShip {}...".format(self.name))
 
     def addOpen(self, location):

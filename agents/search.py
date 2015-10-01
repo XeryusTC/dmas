@@ -56,7 +56,7 @@ class SearchAgent(spade.Agent.Agent):
             msg = spade.ACLMessage.ACLMessage()
             msg.setPerformative(msg.REQUEST)
             msg.setOntology("searcher")
-            msg.addReceiver(self.myAgent.ship.getAID())
+            msg.addReceiver(self.myAgent.ship)
             msg.setContent( (self.myAgent.x, self.myAgent.y) )
             self.myAgent.send(msg)
             self._exitcode = self.myAgent.TRANS_WAIT_FOR_PATH
@@ -103,6 +103,7 @@ class SearchAgent(spade.Agent.Agent):
             print("Starting service discovery")
 
         def _process(self):
+            self._exitcode = self.myAgent.TRANS_DEFAULT
             # Discover mothership (if present)
             sd = spade.DF.ServiceDescription()
             sd.setType("mothership")
@@ -112,7 +113,11 @@ class SearchAgent(spade.Agent.Agent):
             result = self.myAgent.searchService(dad)
             if len(result):
                 print(self.myAgent.name, "switching to mothership")
-#                self.myAgent.ship = result[0].getAID()
+                self.myAgent.ship = result[0].getAID()
+                self.myAgent.sense()
+                self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
+            else:
+                print("NO MOTHERSHIP FOUND")
 
             # Discover pathfinders
             sd = spade.DF.ServiceDescription()
@@ -123,22 +128,20 @@ class SearchAgent(spade.Agent.Agent):
             result = self.myAgent.searchService(dad)
             print("Services found:", [r.asContentObject() for r in result])
 
-            self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
-
 
     def _setup(self):
         print("Starting search agent {}...".format(self.name))
         self.visited = set()
         self.open = set()
         self.route = []
-        #self.move(1, self.maze.h * 2)
-        self.move(1, 1)
+        self.x = 1
+        self.y = 1
+        self.ship = False
 
-        #rw = self.RandomWalkBehav(1)
         temp = spade.Behaviour.ACLTemplate()
         temp.setOntology("searcher")
         rt = spade.Behaviour.MessageTemplate(temp)
-        #self.addBehaviour(rw, rt)
+
         b = spade.Behaviour.FSMBehaviour()
         b.registerFirstState(self.DiscoverServicesBehav(), self.DISCOVER_CODE)
         b.registerState(self.PickPathBehav(),     self.PICK_CORRIDOR_CODE)
@@ -159,7 +162,6 @@ class SearchAgent(spade.Agent.Agent):
 
         self.addBehaviour(b, rt)
 
-        self.sense()
         self.is_setup = True
 
     def takeDown(self):
@@ -181,12 +183,9 @@ class SearchAgent(spade.Agent.Agent):
         msg = spade.ACLMessage.ACLMessage()
         msg.setPerformative("inform")
         msg.setOntology("searcher")
-        msg.addReceiver(self.ship.getAID())
+        msg.addReceiver(self.ship)
         msg.setContent("visited {}".format( (x, y) ))
         self.send(msg)
-
-    def setShip(self, s):
-        self.ship = s
 
     def setMaze(self, m):
         self.maze = m
@@ -218,7 +217,7 @@ class SearchAgent(spade.Agent.Agent):
             msg = spade.ACLMessage.ACLMessage()
             msg.setPerformative("inform")
             msg.setOntology("searcher")
-            msg.addReceiver(self.ship.getAID())
+            msg.addReceiver(self.ship)
             msg.setContent("opened {}".format(openlist))
             self.send(msg)
 
