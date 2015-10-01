@@ -80,6 +80,7 @@ class Maze(object):
 
         del map[-1]
 
-        #map[h * 2][1] = 0
+        #map[1][3] = 1
+        #map[2][1] = 1
 
         return map

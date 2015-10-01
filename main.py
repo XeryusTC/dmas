@@ -6,6 +6,7 @@ from gnui.gnui import GNUI
 from agents.search import SearchAgent
 from agents.db import DatabaseAgent
 from agents.mothership import Mothership
+from agents.pathfinder import PathFinder
 
 WIDTH  = 32
 HEIGHT = 16
@@ -19,12 +20,14 @@ if __name__ == "__main__":
 
     mother = Mothership("mother@127.0.0.1", "secret")
     db = DatabaseAgent("db@127.0.0.1", "secret")
+    pathfinder = PathFinder("path@127.0.0.1", "secret")
     db.width  = WIDTH
     db.height = HEIGHT
 
     try:
         mother.start()
         db.start()
+        pathfinder.start()
         while (not db.is_setup) or (not mother.is_setup):
             pass
 
@@ -33,7 +36,7 @@ if __name__ == "__main__":
         for s in search:
             s.setMaze(m)
 
-        for i in range(1000):
+        for i in range(100000):
             search = mother.searchers
             # Wait two seconds between starting each search bot
             if i % 20 == 0 and i/20 < len(search):

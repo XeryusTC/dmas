@@ -91,10 +91,8 @@ class SearchAgent(spade.Agent.Agent):
 
         def _process(self):
             if self.myAgent.route == []:
-                print("woep")
                 self._exitcode = self.myAgent.TRANS_CORRIDOR_WALK
             else:
-                print("blaat")
                 x, y = self.myAgent.route[0]
                 self.myAgent.move(x, y)
                 self.myAgent.sense()

@@ -12,31 +12,37 @@ class Mothership(spade.Agent.Agent):
             msg = self._receive(False)
             while msg:
                 print("Got Reply!")
-                convId = int(msg.getConversationId())
-                content = msg.getContent().split(' ', 1)
+                
                 try:
+                    convId = int(msg.getConversationId())
+                    content = msg.getContent().split(' ', 1)
                     status = self.myAgent.queue[convId]
                 except Exception as e:
                     print(e)
                     return
-                print(status)
                 if not status['map']:
                     if content[0] == "map":
-                        map = eval(content[1])
-                        status['map'] = map
+                        status['map'] = content[1] #MAP
                         planMsg = spade.ACLMessage.ACLMessage(msg.REQUEST)
-                        print("Got map!")
-                        # gotta call the planner here
+
+                        planMsg.setOntology("map")
+                        planMsg.setConversationId(convId)
+                        planMsg.addReceiver(spade.AID.aid("path@127.0.0.1",
+                                                    ["xmpp://path@127.0.0.1"]))
+
+                        planMsg.setContent({'map' : content[1], 'open' : list(self.myAgent.open), 'location' : status['start']})
+                        self.myAgent.send(planMsg)
                     else:
                         reply = msg.createReply()
                         reply.setPerformative(msg.NOT_UNDERSTOOD)
                         self.myAgent.send(reply)
                 else:
+                    print("ROUTE RECEIVED")
                     if content[0] == "route":
-                        route = eval(content[1])
+
                         reply = status['original'].createReply()
                         reply.setPerformative(msg.INFORM)
-                        reply.setContent("route {}".format(route))
+                        reply.setContent(msg.getContent())
                         self.myAgent.send(reply)
                         del self.myAgent.queue[convId]
                     else:
@@ -75,16 +81,20 @@ class Mothership(spade.Agent.Agent):
                         print("Send Reply: {}".format(new))
                     else: # Get a route to a point on the open list
                         print("Requesting path to point")
-                        dbMsg = spade.ACLMessage.ACLMessage(msg.REQUEST)
-                        dbMsg.setOntology("map")
-                        dbMsg.addReceiver(spade.AID.aid("db@127.0.0.1",
+                        try:
+                            dbMsg = spade.ACLMessage.ACLMessage(msg.REQUEST)
+                            dbMsg.setOntology("map")
+                            dbMsg.addReceiver(spade.AID.aid("db@127.0.0.1",
                                                     ["xmpp://db@127.0.0.1"]))
-                        dbMsg.setConversationId(len(self.myAgent.queue))
-                        self.myAgent.queue.append({'original': msg,
+                            dbMsg.setConversationId(len(self.myAgent.queue))
+                            self.myAgent.queue[len(self.myAgent.queue)] = {'original': msg,
                                                    'start': loc,
-                                                   'map': None})
-                        dbMsg.setContent("MAP")
-                        self.myAgent.send(dbMsg)
+                                                   'map': None}
+                            dbMsg.setContent("MAP")
+                            self.myAgent.send(dbMsg)
+                        except Exception, e:
+                            print(e)
+                        
                 msg = self._receive(False)
 
     def _setup(self):
@@ -106,7 +116,7 @@ class Mothership(spade.Agent.Agent):
         self.addBehaviour(rm, rt)
 
         self.searchers = []
-        for i in range(1):
+        for i in range(4):
             self.searchers.append(SearchAgent("search{}@127.0.0.1".format(i),
                                                 "secret"))
             self.searchers[-1].setShip(self)

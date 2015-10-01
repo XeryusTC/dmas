@@ -22,9 +22,11 @@ class DatabaseAgent(spade.Agent.Agent):
 
     class RequestInformationBehaviour(spade.Behaviour.PeriodicBehaviour):
         def _onTick(self):
+
             msg = None
             msg = self._receive(False)
             if msg:
+                print("Hallo xD")
                 data = None
                 print("DB received message: {}".format(msg))
                 print(msg.getContent())

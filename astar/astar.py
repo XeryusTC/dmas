@@ -4,6 +4,7 @@ from heapq import *
 class Astar(object):
 
 	def __init__(self):
+		print "Created Astar"
 		pass
 
 
@@ -12,12 +13,20 @@ class Astar(object):
 
 
 	def convertPath(self, path):
-		return [(step[1], step[0]) for step in path]
+		return [(step[1], step[0]) for step in path][::-1]
 
 	def getPath(self, array, start, goal):
-		array = np.array(array)
+
+		start = (start[1], start[0])
+		goal = (goal[1], goal[0])
+		array = np.array(eval(array))
+
+		array[array == 0] = 1
+		array[array == 3] = 0
+		array[array == 2] = 0
 
 		neighbors = [(0,1),(0,-1),(1,0),(-1,0)]
+
 
 		close_set = set()
 		came_from = {}
@@ -26,7 +35,7 @@ class Astar(object):
 		oheap = []
 
 		heappush(oheap, (fscore[start], start))
-
+		
 		while oheap:
 
 			current = heappop(oheap)[1]
@@ -36,6 +45,7 @@ class Astar(object):
 				while current in came_from:
 					data.append(current)
 					current = came_from[current]
+				
 				return self.convertPath(data)
 
 			close_set.add(current)
@@ -62,5 +72,5 @@ class Astar(object):
 					gscore[neighbor] = tentative_g_score
 					fscore[neighbor] = tentative_g_score + self.heuristic(neighbor, goal)
 					heappush(oheap, (fscore[neighbor], neighbor))
-
+		
 		return False
