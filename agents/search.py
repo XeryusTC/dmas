@@ -26,9 +26,6 @@ class SearchAgent(spade.Agent.Agent):
         # CORRIDOR_WALK_CODE
         moves = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 
-        def onStart(self):
-            print(self.myAgent.name + " starting corridor walk")
-
         def _process(self):
             new = []
             for x, y in self.moves:
@@ -86,9 +83,6 @@ class SearchAgent(spade.Agent.Agent):
 
     class PathWalkBehav(spade.Behaviour.OneShotBehaviour):
         # PATH_WALK_CODE
-        def onStart(self):
-            print(self.myAgent.name + " starting walk path")
-
         def _process(self):
             if self.myAgent.route == []:
                 self._exitcode = self.myAgent.TRANS_CORRIDOR_WALK
@@ -98,7 +92,6 @@ class SearchAgent(spade.Agent.Agent):
                 self.myAgent.sense()
                 self.myAgent.route = self.myAgent.route[1:]
                 self._exitcode = self.myAgent.TRANS_DEFAULT
-            print(self._exitcode)
             time.sleep(self.myAgent.TIMEOUT)
 
 
