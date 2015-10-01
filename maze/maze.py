@@ -12,6 +12,7 @@ class Maze(object):
         self.h = h
         self.maze = self.make_maze(w, h)
         self._addTargets(10)
+        self._addOpenings(100)
 
     def _addTargets(self, targets):
         for i in xrange(0, targets):
@@ -23,6 +24,18 @@ class Maze(object):
 
                 if self.maze[y][x] == PATH:
                     self.maze[y][x] = TARGET
+                    searching = False
+
+    def _addOpenings(self, openings):
+        for i in xrange(0, openings):
+            
+            searching = True
+            while searching:
+                y = randint(1,(self.h * 2) - 1)
+                x = randint(1,(self.w * 2) - 1)
+
+                if self.maze[y][x] == WALL:
+                    self.maze[y][x] = PATH
                     searching = False
             
             

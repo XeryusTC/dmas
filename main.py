@@ -17,6 +17,7 @@ if __name__ == "__main__":
     display = GNUI(WIDTH, HEIGHT)
 
     display.update(m.getMaze(), [])
+    
 
     mother = Mothership("mother@127.0.0.1", "secret")
     db = DatabaseAgent("db@127.0.0.1", "secret")
