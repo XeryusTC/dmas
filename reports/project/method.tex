@@ -49,10 +49,10 @@ the data store so it can be updated with the additional data. This information
 can later be retrieved.
 
 When a search bot gets stuck, it reports its current location to the
-supervisor. The supervisor then requests the current map, it will use the map
-to determine which unexplored area is close to the search robot and it will
-send this location to the robot. The robot will then consult the path planner
-so that it may generate a route for the robot to follow so that it can keep
-exploring the maze.
+supervisor. The supervisor then requests the current map. Then it sends the
+map, the location of the stuck searcher and a position that has not been
+visited yet to the path planner. The planner will return a path if it is
+possible. The supervisor then sends this path to the searcher so it can
+resume exploring.
 
 \subsection{Experimental design}
