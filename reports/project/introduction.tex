@@ -1,13 +1,50 @@
-In modern times, a lot of information is spread out among many sources.
-One of these sources is the internet, where a large collection of different entities need to sychronize and work together to achieve a common goal. Multi agent systems is not much different than that. Various agents with different capabilities have to sychronize and colaborate in order to achive a common goal. The domain where the agents come in handy expands more and more which has resulted many applications based on multi agent systems as well as many argorithms (with various uses) that come allong with the agents themselves. 
+In modern times, a lot of information is spread out among many sources. One of
+these sources is the internet, where a large collection of different entities
+need to be able to communicate so that they can achieve their goals. Multi
+agent systems do not differ much from this. Various agents with different
+capabilities have to communicate and collaborate in order to achieve a common
+goal. The domain where agents based systems are useful grows larger all the
+time. This has resulted many applications based on multi agent systems as well
+as many algorithms (with various uses) that come along with the agents
+themselves. 
 
 \subsection{Problem discription}
-In this particular paper we are discribing a situation where various robots work together under a common coordinator. In our case that goal is to retrieve people who have been traped in a maze. To this end, many different situations have to be taken into account for the smooth extraction of the rescuee, such as robot collision avoidance, robot distruction or prioritization between targets. Another major pithole is the computation of all the data available. For a small area, a regular desktop power machine would be sufficient, but it would - most likely - not scale up properly. In that case we need the agents to be able to outsorce the computation needed to a higher end machine to do the computation for them.
+In this particular paper we are describing a situation where various robots
+work together under a common coordinator. In our case that goal is to retrieve
+people who have been trapped in a maze. To this end, many different situations
+have to be taken into account for the smooth extraction of the victim, such as
+robot collision avoidance, robot destruction or prioritization between targets.
+Another major pitfall is the computation of all the data available. For a small
+area, a regular desktop power machine would be sufficient, but for larger real
+world applications it would not scale up properly because there are many
+machines involved, including some physical robots. In that case the agents
+should be able to outsource the computation to other agents which run on
+hardware that is dedicated for computing the task.
 
 
 \subsection{State of the Art}
-We base our approach on the follwoing two papers which describe the state of the art for our domain. 
-\cite{intframe}.
+We base our approach on the following two papers which describe the state of
+the art for our domain. \cite{intframe}.
 
 \subsection{New Idea}
-The main procedure is as follows; first the robots are sent into the uncharted maze. As they move around they map the maze and they sent this information back to the coordinator (another agent) which keeps track of the map, as well as the movements of the agents and plans ahead how the agents should move. Our plan howver is to elaborate on the above even more. As there are multiple ways for the agents to communicate we plan on testing two different approahes and see which one works better. The first approach is more centralized where the low-level agents are only capable of communicating with the coordinator and in turn, the coordinator has to update the database or use the pathplaner in order to find another path for the agent in case he is stuck. Thus all the communications are done through a central point which may result to a double edge blade, since, onthe possitive side we have one agent taking all the desicions but it is also a potential bottleneck and a single-point-failure. The second approach is less centralized. The low-level agents can directly communicate with the database and update it themselves. In case where one of the agents gets stuck, only then does the agent contuct the coordinator, the coordinator informs the pathplanner and only then the pathplanner communicates with the agent to give him the next path the agent should follow. 
+The main procedure is as follows; first search robots are sent into the
+uncharted maze. As they move around the immediate environment is sensed and
+this information gets stored in a central database. The management of this
+database is the task of a different agent. This means that creating a global
+map is at least one agent-to-agent interaction. There is also a general
+supervising agent that can tell the search robots where to go in the maze so
+that exploration is optimized and robots don't explore the corridors that have
+already been explored by other agents. This supervising agent can be just focus
+on this task, but it can also be a stricter manager which handles most of the
+communication between different agents, especially between the robot agents and
+any other agents. This means that this managing agent ties all the different
+services together in a single monolithic agent. This is the system that was
+used in \cite{intframe}.
+
+We plan to compare the usage of a monolithic agent versus the distributed
+system. In the distributed system the robot agents can communicate directly
+with the agents that communicate with web services. In this case the supervisor
+will do the minimum amount necessary to create a global plan for the robotic
+agents but these will have to figure out the details and communicate with
+services themselves. We hope that this will remove the single point of failure
+that a monolithic agent has.
