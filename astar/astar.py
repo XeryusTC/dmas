@@ -73,4 +73,4 @@ class Astar(object):
 					fscore[neighbor] = tentative_g_score + self.heuristic(neighbor, goal)
 					heappush(oheap, (fscore[neighbor], neighbor))
 		
-		return False
+		return []

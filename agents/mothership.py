@@ -11,7 +11,7 @@ class Mothership(spade.Agent.Agent):
         def _onTick(self):
             msg = self._receive(False)
             while msg:
-                print("Got Reply!")
+                #print("Got Reply!")
                 
                 try:
                     convId = int(msg.getConversationId())
@@ -78,7 +78,7 @@ class Mothership(spade.Agent.Agent):
                         reply.setPerformative(reply.INFORM)
                         reply.setContent("route {}".format([new]))
                         self.myAgent.send(reply)
-                        print("Send Reply: {}".format(new))
+                        #print("Send Reply: {}".format(new))
                     else: # Get a route to a point on the open list
                         print("Requesting path to point")
                         try:

@@ -12,7 +12,7 @@ class Maze(object):
         self.h = h
         self.maze = self.make_maze(w, h)
         self._addTargets(10)
-        self._addOpenings(100)
+        self._addOpenings(50)
 
     def _addTargets(self, targets):
         for i in xrange(0, targets):
