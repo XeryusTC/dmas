@@ -32,7 +32,7 @@ class SearchAgent(spade.Agent.Agent):
             new = []
             for x, y in self.moves:
                 nextpos = (self.myAgent.x+x, self.myAgent.y+y)
-                if nextpos in self.myAgent.open \
+                if nextpos in self.myAgent.paths \
                         and nextpos != self.myAgent.previous:
                     new.append(nextpos)
             if len(new) == 1:
@@ -80,7 +80,8 @@ class SearchAgent(spade.Agent.Agent):
                     reply.setPerformative(reply.NOT_UNDERSTOOD)
                     self.myAgent.send(reply)
             else:
-                self._exitcode = self.myAgent.TRANS_DEFAULT
+                print(self.myAgent.name, "POSSIBLY STUCK, UNSTUCKING")
+                self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
 
 
     class PathWalkBehav(spade.Behaviour.OneShotBehaviour):
@@ -131,12 +132,11 @@ class SearchAgent(spade.Agent.Agent):
 
     def _setup(self):
         print("Starting search agent {}...".format(self.name))
-        self.visited = set()
-        self.open = set()
         self.route = []
         self.x = 1
         self.y = 1
         self.ship = False
+        self.previous = None
 
         temp = spade.Behaviour.ACLTemplate()
         temp.setOntology("searcher")
@@ -155,7 +155,7 @@ class SearchAgent(spade.Agent.Agent):
         b.rT(self.PICK_CORRIDOR_CODE, self.WAIT_FOR_PATH_CODE, self.TRANS_WAIT_FOR_PATH)
         b.rT(self.CORRIDOR_WALK_CODE, self.CORRIDOR_WALK_CODE, self.TRANS_DEFAULT)
         b.rT(self.CORRIDOR_WALK_CODE, self.PICK_CORRIDOR_CODE, self.TRANS_PICK_CORRIDOR)
-        b.rT(self.WAIT_FOR_PATH_CODE, self.WAIT_FOR_PATH_CODE, self.TRANS_DEFAULT)
+        b.rT(self.WAIT_FOR_PATH_CODE, self.PICK_CORRIDOR_CODE, self.TRANS_PICK_CORRIDOR)
         b.rT(self.WAIT_FOR_PATH_CODE, self.PATH_WALK_CODE,     self.TRANS_PATH_WALK)
         b.rT(self.PATH_WALK_CODE,     self.PATH_WALK_CODE,     self.TRANS_DEFAULT)
         b.rT(self.PATH_WALK_CODE,     self.CORRIDOR_WALK_CODE, self.TRANS_CORRIDOR_WALK)
@@ -173,11 +173,6 @@ class SearchAgent(spade.Agent.Agent):
         except AttributeError:
             pass # This was the first step, so we can ignore the exception
 
-        self.visited.add( (x, y) )
-        try:
-            self.open.remove( (x, y) )
-        except KeyError:
-            print("Position ", (x, y), " not in open list")
         self.x = x
         self.y = y
         msg = spade.ACLMessage.ACLMessage()
@@ -205,14 +200,14 @@ class SearchAgent(spade.Agent.Agent):
         self.send(msg)
 
         pos = [(0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)]
-        openlist = []
+        self.paths = []
         for i in range(len(d)):
-            if d[i] == maze.PATH_VISITED or d[i] == maze.TARGET:
+            if d[i] in maze.ACCESSIBLE:
                 x = self.x + pos[i][0]
                 y = self.y + pos[i][1]
-                if (x, y) not in self.visited:
-                    self.open.add( (x, y) )
-                    openlist.append( (x, y) )
+                self.paths.append( (x, y) )
+        openlist = self.paths
+
         if len(openlist):
             msg = spade.ACLMessage.ACLMessage()
             msg.setPerformative("inform")

@@ -4,6 +4,7 @@ PATH = 0
 WALL = 1
 PATH_VISITED = 2
 TARGET = 3
+ACCESSIBLE = (PATH, PATH_VISITED, TARGET)
 
 class Maze(object):
 
@@ -16,7 +17,7 @@ class Maze(object):
 
     def _addTargets(self, targets):
         for i in xrange(0, targets):
-            
+
             searching = True
             while searching:
                 y = randint(0,self.h * 2)
@@ -28,7 +29,7 @@ class Maze(object):
 
     def _addOpenings(self, openings):
         for i in xrange(0, openings):
-            
+
             searching = True
             while searching:
                 y = randint(1,(self.h * 2) - 1)
@@ -37,11 +38,6 @@ class Maze(object):
                 if self.maze[y][x] == WALL:
                     self.maze[y][x] = PATH
                     searching = False
-            
-            
-
-
-
 
     def getData(self, x, y):
         data = []
