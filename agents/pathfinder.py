@@ -19,16 +19,23 @@ class PathFinder(spade.Agent.Agent):
             if msg:
                 data = None
                 content = eval(msg.getContent())
+                
 
-                try:
-                    path = self.astar.getPath(content['map'], content['location'], content['open'][0])
-                    for goal in content['open']:
+                path = self.astar.getPath(content['map'], content['location'], content['open'][0])
+                
+                for goal in content['open']:
+
+                    try:
                         tempPath = self.astar.getPath(content['map'], content['location'], goal)
 
-                        if len(tempPath) < len(path):
-                            path = tempPath
-                except Exception as e:
-                    print(e)
+                        if len(tempPath) > 0:
+                            if len(tempPath) < len(path):
+                                path = tempPath
+                    except Exception as e:
+                        print(e)
+
+                    if len(path) == 0:
+                        path = self.astar.getPath(content['map'], content['location'], (1,1))        
 
                 try:
                     
