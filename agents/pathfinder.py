@@ -20,6 +20,8 @@ class PathFinder(spade.Agent.Agent):
                 data = None
                 content = eval(msg.getContent())
                 
+                if len(content['open']) == 0:
+                    content['open'] = [(1,1)]
 
                 path = self.astar.getPath(content['map'], content['location'], content['open'][0])
                 

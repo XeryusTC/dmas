@@ -37,6 +37,17 @@ class Mothership(spade.Agent.Agent):
                 else:
                     print("ROUTE RECEIVED")
                     if content[0] == "route":
+                        try:
+                            #Remove new target from open list
+                            if len(eval(content[1])) > 0:
+                                tempTarget = eval(content[1])[-1]
+                        
+                                if tempTarget in self.myAgent.open:
+                                    self.myAgent.open.remove(tempTarget)
+
+                        except Exception as e:
+                            print(e)
+
 
                         reply = status['original'].createReply()
                         reply.setPerformative(msg.INFORM)
