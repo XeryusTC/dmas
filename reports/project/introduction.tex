@@ -1,50 +1,87 @@
-In modern times, a lot of information is spread out among many sources. One of
-these sources is the internet, where a large collection of different entities
-need to be able to communicate so that they can achieve their goals. Multi
-agent systems do not differ much from this. Various agents with different
-capabilities have to communicate and collaborate in order to achieve a common
-goal. The domain where agents based systems are useful grows larger all the
-time. This has resulted many applications based on multi agent systems as well
-as many algorithms (with various uses) that come along with the agents
-themselves. 
+In modern times, a lot of information is spread out among many sources. One
+of these sources is the internet, where a large collection of different
+entities contain both know-what and know-how.  A different source is the
+real world, where robots can collect information by sensing their
+environment. We would want to combine these sources to get the most up to
+date and complete information about the world. This could for example be
+relevant in a situation where we want to collect information about traffic
+flow so navigation systems can try to control the flow.
 
-\subsection{Problem discription}
-In this particular paper we are describing a situation where various robots
-work together under a common coordinator. In our case that goal is to retrieve
-people who have been trapped in a maze. To this end, many different situations
-have to be taken into account for the smooth extraction of the victim, such as
-robot collision avoidance, robot destruction or prioritization between targets.
-Another major pitfall is the computation of all the data available. For a small
-area, a regular desktop power machine would be sufficient, but for larger real
-world applications it would not scale up properly because there are many
-machines involved, including some physical robots. In that case the agents
-should be able to outsource the computation to other agents which run on
-hardware that is dedicated for computing the task.
+\subsection{Problem description} 
 
+A global system where these separate systems can communicate and share information
+is not implemented yet. A multi-agent system would be a good platform to
+build such a system on, since it allows services to negotiate terms for
+co-operation and advertise their services. 
 
-\subsection{State of the Art}
-We base our approach on the following two papers which describe the state of
-the art for our domain. \cite{intframe}.
+%In this particular paper we are describing
+%a situation where various robots work together under a common coordinator.
+%In our case that goal is to retrieve people who have been trapped in a
+%maze. To this end, many different situations have to be taken into account
+%for the smooth extraction of the victim, such as robot collision avoidance,
+%robot destruction or prioritization between targets.  Another major pitfall
+%is the computation of all the data available. For a small area, a regular
+%desktop power machine would be sufficient, but for larger real world
+%applications it would not scale up properly because there are many machines
+%involved, including some physical robots. In that case the agents should be
+%able to outsource the computation to other agents which run on hardware
+%that is dedicated for computing the task.
 
-\subsection{New Idea}
-The main procedure is as follows; first search robots are sent into the
-uncharted maze. As they move around the immediate environment is sensed and
-this information gets stored in a central database. The management of this
-database is the task of a different agent. This means that creating a global
-map is at least one agent-to-agent interaction. There is also a general
-supervising agent that can tell the search robots where to go in the maze so
-that exploration is optimized and robots don't explore the corridors that have
-already been explored by other agents. This supervising agent can be just focus
-on this task, but it can also be a stricter manager which handles most of the
-communication between different agents, especially between the robot agents and
-any other agents. This means that this managing agent ties all the different
-services together in a single monolithic agent. This is the system that was
-used in \cite{intframe}.
+\subsection{State of the Art} 
 
-We plan to compare the usage of a monolithic agent versus the distributed
-system. In the distributed system the robot agents can communicate directly
-with the agents that communicate with web services. In this case the supervisor
-will do the minimum amount necessary to create a global plan for the robotic
-agents but these will have to figure out the details and communicate with
-services themselves. We hope that this will remove the single point of failure
-that a monolithic agent has.
+Such a system has been implemented before in \cite{intframe}. This system
+consisted of multiple physical agents, one web service that did path
+planning and a supervisor that coordinated the interaction between the two.
+Since there was only one web service to chose from, the system did not do
+any form of negotiation or service discovery yet. They also used one
+ontology for everything.
+
+\subsection{New Idea} 
+
+In \cite{intframe} the supervisor agent was a monolithic agent, while its
+tasks could be separated into multiple agents. This would have as downside
+that this becomes a single bottleneck for communication, since it is the
+component that is guiding all communication. The upside of this system is
+that one agent has all the state needed to coordinate the rest. We do
+suspect that this upside does not outweigh the downsides and want to test
+this.
+
+In order to test this, we will create both a monolithic supervisor, the
+mothership, and a distributed agent, where all the responsibilities are
+divided among more components. This will allow us to test these two
+different architectures. In the case of the distributed agent most
+communication will go from the robots to special forwarders that
+communicate with the web services. This means that the supervisor will only
+be called when its services are really necessary, relieving the stress from
+this part of the system. 
+
+Another change we will make is that we will make the services discoverable
+instead of hard code them into the service, although we will still only
+have one instance of each web service.  A third change that we want to make
+is in the environment. In \cite{intframe} the environment was simplistic,
+whereas we want to use a more complicated maze. This will also increase the
+stress on the system, making it easier to test the different architectures
+for the supervisor. 
+
+% The main procedure is as follows; first search robots
+% are sent into the uncharted maze. As they move around the immediate
+% environment is sensed and this information gets stored in a central
+% database. The management of this database is the task of a different agent.
+% This means that creating a global map is at least one agent-to-agent
+% interaction. There is also a general supervising agent that can tell the
+% search robots where to go in the maze so that exploration is optimized and
+% robots don't explore the corridors that have already been explored by other
+% agents. This supervising agent can be just focus on this task, but it can
+% also be a stricter manager which handles most of the communication between
+% different agents, especially between the robot agents and any other agents.
+% This means that this managing agent ties all the different services
+% together in a single monolithic agent. This is the system that was used in
+% \cite{intframe}.
+% 
+% We plan to compare the usage of a monolithic agent versus the distributed
+% system. In the distributed system the robot agents can communicate directly
+% with the agents that communicate with web services. In this case the
+% supervisor will do the minimum amount necessary to create a global plan for
+% the robotic agents but these will have to figure out the details and
+% communicate with services themselves. We hope that this will remove the
+% single point of failure that a monolithic agent has.
