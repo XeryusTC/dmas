@@ -41,9 +41,26 @@ class DatabaseAgent(spade.Agent.Agent):
                 print("Sending data to {}".
                         format(msg.getSender()))
 
+
+    class RegisterServicesBehav(spade.Behaviour.OneShotBehaviour):
+        def _process(self):
+            dad = spade.DF.DfAgentDescription()
+            sd = spade.DF.ServiceDescription()
+            sd.setType("database")
+            sd.setName("standalone")
+            dad.addService(sd)
+
+            dad.setAID(self.myAgent.getAID())
+            res = self.myAgent.registerService(dad)
+            print(self.myAgent.name, "services registered:", res)
+
+
     def _setup(self):
         print("Starting DatabaseAgent {}...".format(self.name))
         self.map = Map(self.width, self.height)
+
+        # Register services
+        self.addBehaviour(self.RegisterServicesBehav(), None)
 
         template = spade.Behaviour.ACLTemplate()
         template.addReceiver(spade.AID.aid("db@127.0.0.1",
