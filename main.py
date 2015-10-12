@@ -18,20 +18,7 @@ if __name__ == "__main__":
 
     display.update(m.getMaze(), [])
 
-
-    mother = Mothership("mother@127.0.0.1", "secret")
-    db = DatabaseAgent("db@127.0.0.1", "secret")
-    pathfinder = PathFinder("path@127.0.0.1", "secret")
-    db.width  = WIDTH
-    db.height = HEIGHT
-
     try:
-        mother.start()
-        db.start()
-        pathfinder.start()
-        while (not db.is_setup) or (not mother.is_setup):
-            pass
-
         print "Starting searchers"
         search = [SearchAgent("search{}@127.0.0.1".format(i), "secret")
                 for i in SEARCHERS]
@@ -52,8 +39,5 @@ if __name__ == "__main__":
         print traceback.format_exc()
 
     # stop all agents
-    db.stop()
-    mother.stop()
-    pathfinder.stop()
     for s in search:
         s.stop()

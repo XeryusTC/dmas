@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-from agents.search import SearchAgent
 import random
 import spade
 
@@ -41,7 +40,7 @@ class Mothership(spade.Agent.Agent):
                             #Remove new target from open list
                             if len(eval(content[1])) > 0:
                                 tempTarget = eval(content[1])[-1]
-                        
+
                                 if tempTarget in self.myAgent.open:
                                     self.myAgent.open.remove(tempTarget)
 
@@ -165,3 +164,22 @@ class Mothership(spade.Agent.Agent):
             self.open.remove(location)
         except KeyError:
             pass
+
+
+def main():
+    import time
+    import traceback
+    ms = Mothership("mother@127.0.0.1", "secret")
+    ms.start()
+
+    try:
+        while 1: time.sleep(1)
+    except KeyboardInterrupt:
+        pass
+    except:
+        print(traceback.format_exc())
+
+    ms.stop()
+
+if __name__ == '__main__':
+    main()

@@ -60,8 +60,35 @@ class DatabaseAgent(spade.Agent.Agent):
 
         rb = self.RequestInformationBehaviour(.1)
         self.addBehaviour(rb, temp)
-        
+
         self.is_setup = True
 
     def takeDown(self):
         print("Stopping database agent {}...".format(self.name))
+
+
+def main():
+    import traceback
+    import sys
+    import time
+
+    if len(sys.argv) < 3:
+        print("Please give the width and height of the map (in that order)")
+        sys.exit(1)
+
+    db = DatabaseAgent("db@127.0.0.1", "secret")
+    db.start()
+    db.width = int(sys.argv[1])
+    db.height = int(sys.argv[2])
+
+    try:
+        while 1: time.sleep(1)
+    except KeyboardInterrupt:
+        pass
+    except:
+        print(traceback.format_exc())
+
+    db.stop()
+
+if __name__ == '__main__':
+    main()

@@ -19,12 +19,12 @@ class PathFinder(spade.Agent.Agent):
             if msg:
                 data = None
                 content = eval(msg.getContent())
-                
+
                 if len(content['open']) == 0:
                     content['open'] = [(1,1)]
 
                 path = self.astar.getPath(content['map'], content['location'], content['open'][0])
-                
+
                 for goal in content['open']:
 
                     try:
@@ -37,7 +37,7 @@ class PathFinder(spade.Agent.Agent):
                         print(e)
 
                     if len(path) == 0:
-                        path = self.astar.getPath(content['map'], content['location'], (1,1))        
+                        path = self.astar.getPath(content['map'], content['location'], (1,1))
 
                 try:
 
@@ -81,3 +81,22 @@ class PathFinder(spade.Agent.Agent):
 
     def takeDown(self):
         print("Stopping PathFinder agent {}...".format(self.name))
+
+
+def main():
+    import time
+    import traceback
+    pf = PathFinder("path@127.0.0.1", "secret")
+    pf.start()
+
+    try:
+        while 1: time.sleep(1)
+    except KeyboardInterrupt:
+        pass
+    except:
+        print(traceback.format_exc())
+
+    pf.stop()
+
+if __name__ == '__main__':
+    main()

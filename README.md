@@ -14,3 +14,10 @@ Starting SPADE can be done by running the following commands:
 configure.py 127.0.0.1
 runspade.py
 ```
+
+Mothership, database and pathfinder agents can be start in seperate
+interpreters, this can be done with the command
+```
+python -m agents.<name>
+```
+where <name> is the filename of the agent.
