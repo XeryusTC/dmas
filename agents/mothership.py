@@ -3,6 +3,9 @@ from __future__ import print_function
 import random
 import spade
 
+from maze import maze
+from util import backtrace
+
 class Mothership(spade.Agent.Agent):
     """The supervisor class for all other agents"""
     is_setup = False
@@ -62,6 +65,7 @@ class Mothership(spade.Agent.Agent):
     class SearcherManager(spade.Behaviour.PeriodicBehaviour):
         moves = [(0, -1), (0, 1), (-1, 0), (1,0)]
 
+        @backtrace
         def _onTick(self):
             msg = self._receive(False)
             while msg:
@@ -74,7 +78,10 @@ class Mothership(spade.Agent.Agent):
                     elif sc[0] == "opened":
                         new = eval(sc[1])
                         for loc in new:
-                            self.myAgent.addOpen(loc)
+                            self.myAgent.addOpen(loc[:2])
+                            if loc[2] == maze.TARGET:
+                                self.myAgent.targets.add(loc[:2])
+                                print(self.myAgent.targets)
                 elif perf == "request":
                     print("got request")
                     loc = eval(msg.getContent())
@@ -106,6 +113,35 @@ class Mothership(spade.Agent.Agent):
                 msg = self._receive(False)
 
 
+    class RescueManager(spade.Behaviour.PeriodicBehaviour):
+        @backtrace
+        def _onTick(self):
+            msg = self._receive(False)
+            if msg:
+                perf = msg.getPerformative()
+                if perf == "inform":
+                    content = msg.getContent().split(' ', 1)
+                    if content[0] == "carrying":
+                        print("Agent is carrying target")
+                        pos = eval(content[1])
+            if len(self.myAgent.targets) > 0:
+                # Find all available rescuers
+                sd = spade.DF.ServiceDescription()
+                sd.setType("rescue")
+                sd.setName("available")
+                dad = spade.DF.DfAgentDescription()
+                dad.addService(sd)
+
+                result = self.myAgent.searchService(dad)
+                #send a path to the first available rescuer
+                if len(result):
+                    rescuer = result[0].getAID()
+                    rMsg = spade.ACLMessage.ACLMessage()
+                    rMsg.setOntology("rescuer")
+                    rMsg.addReceiver(rescuer)
+                    rMsg.setContent("rescue {}".format([self.myAgent.targets.pop()]))
+                    self.myAgent.send(rMsg)
+
     class RegisterServicesBehav(spade.Behaviour.OneShotBehaviour):
         def onSetup(self):
             print("Registering mothership services")
@@ -132,6 +168,7 @@ class Mothership(spade.Agent.Agent):
         self.visited = set()
         self.open    = set()
         self.queue = {}
+        self.targets = set()
 
         self.addBehaviour(self.RegisterServicesBehav(), None)
 
@@ -145,6 +182,12 @@ class Mothership(spade.Agent.Agent):
         routeTemp.setOntology("map")
         rt = spade.Behaviour.MessageTemplate(routeTemp)
         rm = self.RouteManager(.1)
+        self.addBehaviour(rm, rt)
+
+        rescueTemp = spade.Behaviour.ACLTemplate()
+        rescueTemp.setOntology("rescuer")
+        rt = spade.Behaviour.MessageTemplate(rescueTemp)
+        rm = self.RescueManager(.1)
         self.addBehaviour(rm, rt)
 
         self.is_setup = True

@@ -127,7 +127,6 @@ class SearchAgent(spade.Agent.Agent):
             dad.addService(sd)
 
             result = self.myAgent.searchService(dad)
-            print("Services found:", [r.asContentObject() for r in result])
 
 
     def _setup(self):
@@ -205,7 +204,7 @@ class SearchAgent(spade.Agent.Agent):
             if d[i] in maze.ACCESSIBLE:
                 x = self.x + pos[i][0]
                 y = self.y + pos[i][1]
-                self.paths.append( (x, y) )
+                self.paths.append( (x, y, d[i]) )
         openlist = self.paths
 
         if len(openlist):

@@ -21,7 +21,8 @@ class RescueAgent(spade.Agent.Agent):
                     content = msg.getContent().split(' ', 1)
                     if content[0] == 'rescue':
                         self.myAgent.path = eval(content[1])
-                        self.myAgent.ret = []
+                        print(self.myAgent.name, "Going to rescue", self.myAgent.path)
+                        self.myAgent.ret = [self.myAgent.position]
                         self.myAgent.toggleOccupied()
             else: # go rescue
                 if len(self.myAgent.path) > 0:
@@ -49,12 +50,12 @@ class RescueAgent(spade.Agent.Agent):
 
     class DiscoverServicesBehav(spade.Behaviour.OneShotBehaviour):
         def onStart(self):
-            print("Starting service discovery")
+            print(self.myAgent.name, "Starting service discovery")
 
         @backtrace
-        def _proccess(self):
+        def _process(self):
             sd = spade.DF.ServiceDescription()
-            sd.setType("Mothership")
+            sd.setType("mothership")
             dad = spade.DF.DfAgentDescription()
             dad.addService(sd)
 
@@ -108,7 +109,7 @@ class RescueAgent(spade.Agent.Agent):
             self.sd.setName("available")
         self.dad.updateService(self.sd)
 
-        res = self.registerService(dad)
+        res = self.registerService(self.dad)
         print(self.name, "toggled to:", self.occupied, res)
 
     def move(self, x, y):
