@@ -8,10 +8,12 @@ from agents.db import DatabaseAgent
 from agents.mothership import Mothership
 from agents.pathfinder import PathFinder
 from agents.display import DisplayAgent
+from agents.rescuer import RescueAgent
 
 WIDTH  = 32
 HEIGHT = 16
 SEARCHERS = range(3)
+RESCUERS  = range(3)
 
 if __name__ == "__main__":
     m = Maze(WIDTH, HEIGHT)
@@ -28,8 +30,14 @@ if __name__ == "__main__":
                 for i in SEARCHERS]
         for s in search:
             s.setMaze(m)
+        print "Starting rescuers"
+        rescue = [RescueAgent("rescue{}@127.0.0.1".format(i), "secret")
+                for i in RESCUERS]
+        for r in rescue:
+            r.start()
+
         da.display = display
-        da.agents = search
+        da.agents = search + rescue
 
         for i in range(100000):
             # Wait two seconds between starting each search bot
@@ -47,4 +55,6 @@ if __name__ == "__main__":
     # stop all agents
     for s in search:
         s.stop()
+    for r in rescue:
+        r.stop()
     da.stop()
