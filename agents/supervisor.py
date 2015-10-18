@@ -54,7 +54,7 @@ class SupervisorAgent(spade.Agent.Agent):
                         print(self.myAgent.name, "Searcher should plan to:", loc)
                         reply = msg.createReply()
                         reply.setPerformative(reply.INFORM)
-                        reply.setContent("destination {}".format([loc]))
+                        reply.setContent("destination {}".format(loc))
                         self.myAgent.send(reply)
 
 
