@@ -5,6 +5,7 @@ import spade
 import time
 
 from maze import maze
+from util import backtrace
 
 class SearchAgent(spade.Agent.Agent):
     CORRIDOR_WALK_CODE = 1
@@ -20,7 +21,7 @@ class SearchAgent(spade.Agent.Agent):
     TRANS_WAIT_FOR_PATH = 40
     TRANS_DISCOVER      = 50
 
-    TIMEOUT = 1 # wait between proccessing oneshots
+    TIMEOUT = .5 # wait between proccessing oneshots
 
     is_setup = False
 
@@ -56,7 +57,10 @@ class SearchAgent(spade.Agent.Agent):
             msg = spade.ACLMessage.ACLMessage()
             msg.setPerformative(msg.REQUEST)
             msg.setOntology("searcher")
-            msg.addReceiver(self.myAgent.ship)
+            if self.myAgent.ship:
+                msg.addReceiver(self.myAgent.ship)
+            else:
+                msg.addReceiver(self.myAgent.sv)
             msg.setContent( (self.myAgent.x, self.myAgent.y) )
             self.myAgent.send(msg)
             self._exitcode = self.myAgent.TRANS_WAIT_FOR_PATH
@@ -67,6 +71,7 @@ class SearchAgent(spade.Agent.Agent):
         def onStart(self):
             print(self.myAgent.name + " starting wait path")
 
+        @backtrace
         def _process(self):
             msg = self._receive(True, 2)
             if msg:
@@ -75,6 +80,14 @@ class SearchAgent(spade.Agent.Agent):
                     route = eval(content[1])
                     self.myAgent.route = route
                     self._exitcode = self.myAgent.TRANS_PATH_WALK
+                elif content[0] == "destination":
+                    planner = random.choice(self.myAgent.pf)
+                    msg = spade.ACLMessage.ACLMessage()
+                    msg.setOntology("map")
+                    msg.addReceiver(planner)
+                    msg.setContent({'open': eval(content[1]),
+                        'location': self.myAgent.position})
+                    self.myAgent.send(msg)
                 else:
                     reply = msg.createReply()
                     reply.setPerformative(reply.NOT_UNDERSTOOD)
@@ -103,6 +116,7 @@ class SearchAgent(spade.Agent.Agent):
         def onStart(self):
             print("Starting service discovery")
 
+        @backtrace
         def _process(self):
             self._exitcode = self.myAgent.TRANS_DEFAULT
             # Discover mothership (if present)
@@ -117,16 +131,30 @@ class SearchAgent(spade.Agent.Agent):
                 self.myAgent.ship = result[0].getAID()
                 self.myAgent.sense()
                 self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
-            else:
-                print("NO MOTHERSHIP FOUND")
+                return
 
-            # Discover pathfinders
+            # Discover supervisor and other agents
             sd = spade.DF.ServiceDescription()
-            sd.setType("pathfinder")
+            sd.setType("supervisor")
             dad = spade.DF.DfAgentDescription()
             dad.addService(sd)
 
             result = self.myAgent.searchService(dad)
+            if len(result):
+                print(self.myAgent.name, "switching to supervisor")
+                self.myAgent.sv = result[0].getAID()
+                self.myAgent.sense()
+
+                # Discover pathfinders
+                sd = spade.DF.ServiceDescription()
+                sd.setType("pathfinder")
+                dad = spade.DF.DfAgentDescription()
+                dad.addService(sd)
+                result = self.myAgent.searchService(dad)
+                if len(result):
+                    self.myAgent.pf = [pf.getAID() for pf in result]
+                    self.myAgent.sense()
+                    self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
 
 
     def _setup(self):
@@ -136,6 +164,9 @@ class SearchAgent(spade.Agent.Agent):
         self.y = 1
         self.ship = False
         self.previous = None
+
+        self.sv = False
+        self.pf = []
 
         temp = spade.Behaviour.ACLTemplate()
         temp.setOntology("searcher")
@@ -177,7 +208,10 @@ class SearchAgent(spade.Agent.Agent):
         msg = spade.ACLMessage.ACLMessage()
         msg.setPerformative("inform")
         msg.setOntology("searcher")
-        msg.addReceiver(self.ship)
+        if self.ship:
+            msg.addReceiver(self.ship)
+        else:
+            msg.addReceiver(self.sv)
         msg.setContent("visited {}".format( (x, y) ))
         self.send(msg)
 
@@ -211,7 +245,10 @@ class SearchAgent(spade.Agent.Agent):
             msg = spade.ACLMessage.ACLMessage()
             msg.setPerformative("inform")
             msg.setOntology("searcher")
-            msg.addReceiver(self.ship)
+            if self.ship:
+                msg.addReceiver(self.ship)
+            else:
+                msg.addReceiver(self.sv)
             msg.setContent("opened {}".format(openlist))
             self.send(msg)
 
