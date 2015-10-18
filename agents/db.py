@@ -2,33 +2,36 @@ from __future__ import print_function
 import spade
 
 from map.map import Map
+from util import backtrace
 
 class DatabaseAgent(spade.Agent.Agent):
     """Agent that keeps track of the map"""
     is_setup = False
 
     class StoreDataBehaviour(spade.Behaviour.PeriodicBehaviour):
+        @backtrace
         def _onTick(self):
             msg = self._receive(False)
 
             if msg:
                 perf = msg.getPerformative()
 
-                if perf == "inform":
+                if perf == "inform" and not msg.getContent().startswith("<rdf"):
                     content = eval(msg.getContent())
                     pos = content['pos']
                     data = content['data']
                     self.myAgent.map.update(pos[0], pos[1], data)
 
     class RequestInformationBehaviour(spade.Behaviour.PeriodicBehaviour):
+        @backtrace
         def _onTick(self):
 
             msg = None
             msg = self._receive(False)
             if msg:
                 data = None
-                print("DB received message: {}".format(msg))
-                print(msg.getContent())
+#                print("DB received message: {}".format(msg))
+#                print(msg.getContent())
                 if msg.getContent() == "MAP":
                     data = self.myAgent.map.getMap()
                 else:
@@ -43,18 +46,12 @@ class DatabaseAgent(spade.Agent.Agent):
 
 
     class RegisterServicesBehav(spade.Behaviour.OneShotBehaviour):
+        @backtrace
         def _process(self):
-            dad = spade.DF.DfAgentDescription()
-            sd = spade.DF.ServiceDescription()
-            sd.setType("database")
-            sd.setName("standalone")
-            dad.addService(sd)
-
-            dad.setAID(self.myAgent.getAID())
-            res = self.myAgent.registerService(dad)
-            print(self.myAgent.name, "services registered:", res)
+            self.myAgent.register_services()
 
 
+    @backtrace
     def _setup(self):
         print("Starting DatabaseAgent {}...".format(self.name))
         self.map = Map(self.width, self.height)
@@ -82,6 +79,16 @@ class DatabaseAgent(spade.Agent.Agent):
 
     def takeDown(self):
         print("Stopping database agent {}...".format(self.name))
+
+    def register_services(self):
+        self.dad = spade.DF.DfAgentDescription()
+        self.sd = spade.DF.ServiceDescription()
+        self.sd.setType("database")
+        self.sd.setName("standalone")
+        self.dad.addService(self.sd)
+        self.dad.setAID(self.getAID())
+        res = self.registerService(self.dad)
+        print(self.name, "services registered:", res)
 
 
 def main():

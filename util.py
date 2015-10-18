@@ -6,6 +6,7 @@ def backtrace(f):
     def wrapper(*args, **kwargs):
         try:
             return f(*args, **kwargs)
-        except:
+        except Exception, ex:
             print traceback.format_exc()
+            raise ex
     return wrapper
