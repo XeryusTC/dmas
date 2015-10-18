@@ -37,6 +37,8 @@ class RescueAgent(spade.Agent.Agent):
                     else:
                         self.myAgent.ret = [dst] + self.myAgent.ret
                 else:
+                    print(self.myAgent.name, "arrived at target")
+                    print(self.myAgent.ret)
                     # we are at the target, turn arround, notify mothership
                     self.myAgent.path = self.myAgent.ret
                     self.myAgent.carrying = True
@@ -102,6 +104,7 @@ class RescueAgent(spade.Agent.Agent):
         print("Stopping Rescuer agent {}...".format(self.name))
 
     def toggleOccupied(self):
+        self.deregisterService(self.dad)
         self.occupied = not self.occupied
         if self.occupied:
             self.sd.setName("occupied")

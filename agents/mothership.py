@@ -134,6 +134,7 @@ class Mothership(spade.Agent.Agent):
 
                 result = self.myAgent.searchService(dad)
                 #send a path to the first available rescuer
+                print([a.asRDFXML() for a in result])
                 if len(result):
                     rescuer = result[0].getAID()
                     rMsg = spade.ACLMessage.ACLMessage()
