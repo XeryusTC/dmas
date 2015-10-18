@@ -15,44 +15,26 @@ class PathFinder(spade.Agent.Agent):
 
         @backtrace
         def _onTick(self):
-            mapupdated = False
             msg = self._receive(False)
             while msg:
                 data = None
                 content = eval(msg.getContent())
 
-                if 'map' not in content:
-                    self.myAgent.mapdirty = not mapupdated
-
-                    # request map update from database
-                    if self.myAgent.mapdirty:
-                        msg = spade.ACLMessage.ACLMessage()
-                        msg.setPerformative(msg.REQUEST)
-                        msg.setOntology("map")
-                        msg.setContent("MAP")
-                        msg.addReceiver(spade.AID.aid("db@127.0.0.1"))
-                        self.myAgent.send(msg)
-
-                        # Wait for a reply from the database
-                        while self.myAgent.mapdirty:
-                            time.sleep(.01)
-                        self.myAgent.mapdirty = False
-
-                        # plan the actual path
-                        path = self.superpath(content['location'], content['open'])
+                if 'map' not in content.keys():
+                    path = self.superpath(content['location'], content['open'])
                 else:
-                    print(self.myAgent.name, "planning path for mothership")
                     path = self.motherpath(content['map'], content['location'], content['open'])
 
                 rep = msg.createReply()
-                rep.setPerformative("inform")
+                if self.myAgent.sv:
+                    rep.setOntology("searcher")
+                else:
+                    rep.setPerformative("inform")
                 rep.setContent("route {}".format(path))
                 self.myAgent.send(rep)
-                print(path)
-                print("PATH DONE")
+                print(self.myAgent.name, "path done", path)
                 msg = self._receive(False)
 
-        @backtrace
         def motherpath(self, map, location, open):
             if len(open) == 0:
                 open = [(1, 1)]
@@ -67,20 +49,19 @@ class PathFinder(spade.Agent.Agent):
                     path = self.astar.getPath(map, location, (1, 1))
             return path
 
-        @backtrace
         def superpath(self, location, open):
             return self.motherpath(self.myAgent.map, location, open)
 
 
-    class DatabaseMapUpdates(spade.Behaviour.EventBehaviour):
+    class DatabaseMapUpdates(spade.Behaviour.PeriodicBehaviour):
         @backtrace
-        def _process(self):
-            msg = self._recieve(False)
+        def _onTick(self):
+            msg = self._receive(False)
             if msg:
                 content = msg.getContent().split(' ', 1)
                 if content[0] == "map":
-                    self.myAgent.map = eval(content[1])
-                    print(self.myAgent.name, self.myAgent.map)
+                    self.myAgent.map = content[1]
+            self.myAgent.sendMapUpdateRequest()
 
 
     class RegisterServicesBehav(spade.Behaviour.OneShotBehaviour):
@@ -114,6 +95,8 @@ class PathFinder(spade.Agent.Agent):
 
             if self.counter > 50 or self.myAgent.sv:
                 self.myAgent.removeBehaviour(self)
+            if self.counter > 50:
+                self.myAgent.removeBehaviour(self.myAgent.mapbehav)
             self.counter = self.counter + 1
 
 
@@ -134,12 +117,26 @@ class PathFinder(spade.Agent.Agent):
         self.addBehaviour(rb, temp)
 
         sb = self.SupervisorDetection(.1)
-    #    self.addBehaviour(sb, None)
+        self.addBehaviour(sb, None)
+
+        dbTemp = spade.Behaviour.ACLTemplate()
+        dbTemp.setPerformative("inform")
+        temp = spade.Behaviour.MessageTemplate(dbTemp)
+        self.mapbehav = self.DatabaseMapUpdates(.1)
+        self.addBehaviour(self.mapbehav, temp)
+        self.sendMapUpdateRequest()
 
         self.is_setup = True
 
     def takeDown(self):
         print("Stopping PathFinder agent {}...".format(self.name))
+
+    def sendMapUpdateRequest(self):
+        msg = spade.ACLMessage.ACLMessage()
+        msg.setPerformative(msg.REQUEST)
+        msg.addReceiver(spade.AID.aid("db@127.0.0.1", ["xmpp://db@127.0.0.1"]))
+        msg.setContent("MAP")
+        self.send(msg)
 
 
 def main():

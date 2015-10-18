@@ -50,9 +50,6 @@ class SearchAgent(spade.Agent.Agent):
 
     class PickPathBehav(spade.Behaviour.OneShotBehaviour):
         # PICK_CORRIDOR_CODE
-        def onStart(self):
-            print(self.myAgent.name + " starting pick path")
-
         def _process(self):
             msg = spade.ACLMessage.ACLMessage()
             msg.setPerformative(msg.REQUEST)
@@ -68,9 +65,6 @@ class SearchAgent(spade.Agent.Agent):
 
     class WaitForPathBehav(spade.Behaviour.OneShotBehaviour):
         # WAIT_FOR_PATH_CODE
-        def onStart(self):
-            print(self.myAgent.name + " starting wait path")
-
         @backtrace
         def _process(self):
             msg = self._receive(True, 2)
@@ -78,15 +72,18 @@ class SearchAgent(spade.Agent.Agent):
                 content = msg.getContent().split(' ', 1)
                 if content[0] == "route":
                     route = eval(content[1])
+                    print(self.myAgent.name, "received route:", route)
                     self.myAgent.route = route
                     self._exitcode = self.myAgent.TRANS_PATH_WALK
                 elif content[0] == "destination":
                     planner = random.choice(self.myAgent.pf)
+                    dest = eval(content[1])
+
                     msg = spade.ACLMessage.ACLMessage()
+                    msg.setPerformative(msg.REQUEST)
                     msg.setOntology("map")
                     msg.addReceiver(planner)
-                    msg.setContent({'open': eval(content[1]),
-                        'location': self.myAgent.position})
+                    msg.setContent({'open': dest, 'location': self.myAgent.position})
                     self.myAgent.send(msg)
                 else:
                     reply = msg.createReply()
@@ -113,8 +110,8 @@ class SearchAgent(spade.Agent.Agent):
 
     class DiscoverServicesBehav(spade.Behaviour.OneShotBehaviour):
         # DISCOVER_CODE
-        def onStart(self):
-            print("Starting service discovery")
+        #def onStart(self):
+        #    print("Starting service discovery")
 
         @backtrace
         def _process(self):

@@ -15,7 +15,7 @@ class SupervisorAgent(spade.Agent.Agent):
         @backtrace
         def _onTick(self):
             msg = self._receive(False)
-            if msg:
+            while msg:
                 perf = msg.getPerformative()
                 if perf == "inform":
                     content = msg.getContent().split(" ", 1)
@@ -27,13 +27,14 @@ class SupervisorAgent(spade.Agent.Agent):
                                 self.myAgent.targets.add(loc[:2])
                     if content[0] == "visited":
                         loc = eval(content[1])
-                        self.myAgent.visited.add(loc)
-                        self.myAgent.open.discard(loc)
+                        self.myAgent.addVisited(loc)
                 elif perf == "request":
                     # Try to see if there is an open route next to the searcher
                     loc = eval(msg.getContent())
+                    print(loc)
                     new = [(loc[0] + x, loc[1] + y) for (x, y) in self.moves
                             if (loc[0] +x, loc[1] + y) in list(self.myAgent.open)]
+                    print(new)
                     if len(new):
                         new = random.choice(new)
                         reply = msg.createReply()
@@ -56,6 +57,7 @@ class SupervisorAgent(spade.Agent.Agent):
                         reply.setPerformative(reply.INFORM)
                         reply.setContent("destination {}".format(loc))
                         self.myAgent.send(reply)
+                msg = self._receive(False)
 
 
     class RescueManager(spade.Behaviour.PeriodicBehaviour):
@@ -113,3 +115,10 @@ class SupervisorAgent(spade.Agent.Agent):
     def addOpen(self, location):
         if location not in self.visited:
             self.open.add(location)
+
+    def addVisited(self, location):
+        self.visited.add(location)
+        try:
+            self.open.remove(location)
+        except KeyError:
+            pass
