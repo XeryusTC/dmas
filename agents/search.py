@@ -31,9 +31,11 @@ class SearchAgent(spade.Agent.Agent):
 
         def _process(self):
             new = []
+            self._exitcode = self.myAgent.TRANS_DEFAULT
+            paths = [(x, y) for (x, y, z) in self.myAgent.paths]
             for x, y in self.moves:
                 nextpos = (self.myAgent.x+x, self.myAgent.y+y)
-                if nextpos in self.myAgent.paths \
+                if nextpos in paths \
                         and nextpos != self.myAgent.previous:
                     new.append(nextpos)
             if len(new) == 1:
@@ -41,10 +43,8 @@ class SearchAgent(spade.Agent.Agent):
                 self.myAgent.move(x, y)
             else:
                 self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
-                return self._exitcode
             # update the map
             self.myAgent.sense()
-            self._exitcode = self.myAgent.TRANS_DEFAULT
             time.sleep(self.myAgent.TIMEOUT)
 
 
@@ -104,7 +104,10 @@ class SearchAgent(spade.Agent.Agent):
                 self.myAgent.move(x, y)
                 self.myAgent.sense()
                 self.myAgent.route = self.myAgent.route[1:]
-                self._exitcode = self.myAgent.TRANS_DEFAULT
+                if self.myAgent.route == []:
+                    self._exitcode = self.myAgent.TRANS_CORRIDOR_WALK
+                else:
+                    self._exitcode = self.myAgent.TRANS_DEFAULT
             time.sleep(self.myAgent.TIMEOUT)
 
 
@@ -195,10 +198,7 @@ class SearchAgent(spade.Agent.Agent):
         print("Stopping search agent {}...".format(self.name))
 
     def move(self, x, y):
-        try:
-            self.previous = (self.x, self.y)
-        except AttributeError:
-            pass # This was the first step, so we can ignore the exception
+        self.previous = (self.x, self.y)
 
         self.x = x
         self.y = y
