@@ -31,6 +31,7 @@ class DisplayAgent(spade.Agent.Agent):
                 self.myAgent.map = eval(content[1])
 
             time.sleep(1)
+
             self.myAgent.requestmap()
 
 

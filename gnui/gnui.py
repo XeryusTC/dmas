@@ -13,16 +13,18 @@ class GNUI(object):
 
 		cv2.namedWindow("GNUI")
 
-	def update(self, map, agents):
+	def update(self, map, agents, rescuers = []):
 		screen = np.zeros((self.height, self.width, 3), 'uint8')
 
 		screen = self.drawMap(screen, map)
 
 		screen = self.drawAgents(screen, agents)
 
+		screen = self.drawRescuers(screen, rescuers)
+
 		cv2.imshow("GNUI", screen)
 
-		cv2.waitKey(20)
+		cv2.waitKey(0)
 
 	def drawMap(self, screen, map):
 		idx = 0
@@ -50,5 +52,12 @@ class GNUI(object):
 		for agent in agents:
 			y, x = agent
 			cv2.rectangle(screen, (y * self.size,x * self.size), (y * self.size + self.size - 1, x * self.size + self.size - 1), (0,0,255), -1)
+
+		return screen
+
+	def drawRescuers(self, screen, rescuers):
+		for rescuer in rescuers:
+			y, x = rescuer
+			cv2.rectangle(screen, (y * self.size,x * self.size), (y * self.size + self.size - 1, x * self.size + self.size - 1), (255,255,0), -1)
 
 		return screen
