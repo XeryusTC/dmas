@@ -59,7 +59,7 @@ class SearchAgent(spade.Agent.Agent):
                 msg.addReceiver(self.myAgent.ship)
             else:
                 msg.addReceiver(self.myAgent.sv)
-                msg.setConversationId(self.myAgent.pathcnt)
+            msg.setConversationId(self.myAgent.pathcnt)
             msg.setContent( (self.myAgent.x, self.myAgent.y) )
             self.myAgent.send(msg)
             self._exitcode = self.myAgent.TRANS_WAIT_FOR_PATH

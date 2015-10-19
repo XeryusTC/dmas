@@ -58,6 +58,6 @@ class GNUI(object):
 	def drawRescuers(self, screen, rescuers):
 		for rescuer in rescuers:
 			y, x = rescuer
-			cv2.rectangle(screen, (y * self.size,x * self.size), (y * self.size + self.size - 1, x * self.size + self.size - 1), (255,255,0), -1)
+			cv2.rectangle(screen, (y * self.size,x * self.size), (y * self.size + self.size - 1, x * self.size + self.size - 1), (127,127,127), -1)
 
 		return screen
