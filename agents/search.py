@@ -59,6 +59,7 @@ class SearchAgent(spade.Agent.Agent):
                 msg.addReceiver(self.myAgent.ship)
             else:
                 msg.addReceiver(self.myAgent.sv)
+                msg.setConversationId(self.myAgent.pathcnt)
             msg.setContent( (self.myAgent.x, self.myAgent.y) )
             self.myAgent.send(msg)
             self._exitcode = self.myAgent.TRANS_WAIT_FOR_PATH
@@ -73,9 +74,14 @@ class SearchAgent(spade.Agent.Agent):
                 content = msg.getContent().split(' ', 1)
                 if content[0] == "route":
                     route = eval(content[1])
-                    print(self.myAgent.name, "received route:", route)
-                    self.myAgent.route = route
-                    self._exitcode = self.myAgent.TRANS_PATH_WALK
+                    if int(msg.getConversationId()) == self.myAgent.pathcnt:
+                        print(self.myAgent.name, "received route:", route)
+                        self.myAgent.route = route
+                        self.myAgent.pathcnt += 1
+                        self._exitcode = self.myAgent.TRANS_PATH_WALK
+                    else:
+                        print(self.myAgent.name, "discarding route:", route,
+                                msg.getConversationId(), self.myAgent.pathcnt)
                 elif content[0] == "destination":
                     planner = random.choice(self.myAgent.pf)
                     dest = eval(content[1])
@@ -85,6 +91,7 @@ class SearchAgent(spade.Agent.Agent):
                     msg.setPerformative(msg.REQUEST)
                     msg.setOntology("map")
                     msg.addReceiver(planner)
+                    msg.setConversationId(self.myAgent.pathcnt)
                     msg.setContent({'open': dest, 'location': self.myAgent.position})
                     self.myAgent.send(msg)
                     self._exitcode = self.myAgent.TRANS_DEFAULT
@@ -167,6 +174,8 @@ class SearchAgent(spade.Agent.Agent):
 
         self.sv = False
         self.pf = []
+        self.pathcnt = 0
+
 
         temp = spade.Behaviour.ACLTemplate()
         temp.setOntology("searcher")
