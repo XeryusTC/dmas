@@ -29,6 +29,7 @@ class SearchAgent(spade.Agent.Agent):
         # CORRIDOR_WALK_CODE
         moves = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 
+        @backtrace
         def _process(self):
             new = []
             self._exitcode = self.myAgent.TRANS_DEFAULT
@@ -78,6 +79,7 @@ class SearchAgent(spade.Agent.Agent):
                 elif content[0] == "destination":
                     planner = random.choice(self.myAgent.pf)
                     dest = eval(content[1])
+                    print(self.myAgent.name, "planning path to", dest)
 
                     msg = spade.ACLMessage.ACLMessage()
                     msg.setPerformative(msg.REQUEST)
@@ -85,6 +87,7 @@ class SearchAgent(spade.Agent.Agent):
                     msg.addReceiver(planner)
                     msg.setContent({'open': dest, 'location': self.myAgent.position})
                     self.myAgent.send(msg)
+                    self._exitcode = self.myAgent.TRANS_DEFAULT
                 else:
                     reply = msg.createReply()
                     reply.setPerformative(reply.NOT_UNDERSTOOD)
@@ -113,9 +116,6 @@ class SearchAgent(spade.Agent.Agent):
 
     class DiscoverServicesBehav(spade.Behaviour.OneShotBehaviour):
         # DISCOVER_CODE
-        #def onStart(self):
-        #    print("Starting service discovery")
-
         @backtrace
         def _process(self):
             self._exitcode = self.myAgent.TRANS_DEFAULT
@@ -185,6 +185,7 @@ class SearchAgent(spade.Agent.Agent):
         b.rT(self.PICK_CORRIDOR_CODE, self.WAIT_FOR_PATH_CODE, self.TRANS_WAIT_FOR_PATH)
         b.rT(self.CORRIDOR_WALK_CODE, self.CORRIDOR_WALK_CODE, self.TRANS_DEFAULT)
         b.rT(self.CORRIDOR_WALK_CODE, self.PICK_CORRIDOR_CODE, self.TRANS_PICK_CORRIDOR)
+        b.rT(self.WAIT_FOR_PATH_CODE, self.WAIT_FOR_PATH_CODE, self.TRANS_DEFAULT)
         b.rT(self.WAIT_FOR_PATH_CODE, self.PICK_CORRIDOR_CODE, self.TRANS_PICK_CORRIDOR)
         b.rT(self.WAIT_FOR_PATH_CODE, self.PATH_WALK_CODE,     self.TRANS_PATH_WALK)
         b.rT(self.PATH_WALK_CODE,     self.PATH_WALK_CODE,     self.TRANS_DEFAULT)

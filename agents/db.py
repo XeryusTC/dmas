@@ -30,8 +30,6 @@ class DatabaseAgent(spade.Agent.Agent):
             msg = self._receive(False)
             if msg:
                 data = None
-#                print("DB received message: {}".format(msg))
-#                print(msg.getContent())
                 if msg.getContent() == "MAP":
                     data = self.myAgent.map.getMap()
                 else:
@@ -41,8 +39,6 @@ class DatabaseAgent(spade.Agent.Agent):
                 rep.setPerformative("inform")
                 rep.setContent("map {}".format(data))
                 self.myAgent.send(rep)
-                print("Sending data to {}".
-                        format(msg.getSender()))
 
 
     class RegisterServicesBehav(spade.Behaviour.OneShotBehaviour):

@@ -31,10 +31,8 @@ class SupervisorAgent(spade.Agent.Agent):
                 elif perf == "request":
                     # Try to see if there is an open route next to the searcher
                     loc = eval(msg.getContent())
-                    print(loc)
                     new = [(loc[0] + x, loc[1] + y) for (x, y) in self.moves
                             if (loc[0] +x, loc[1] + y) in list(self.myAgent.open)]
-                    print(new)
                     if len(new):
                         new = random.choice(new)
                         reply = msg.createReply()
