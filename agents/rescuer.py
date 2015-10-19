@@ -1,4 +1,5 @@
 from __future__ import print_function
+import random
 import spade
 
 from util import backtrace
@@ -24,7 +25,33 @@ class RescueAgent(spade.Agent.Agent):
                         print(self.myAgent.name, "Going to rescue", self.myAgent.path)
                         self.myAgent.ret = [self.myAgent.position]
                         self.myAgent.toggleOccupied()
-            else: # go rescue
+                        self.myAgent.isrescueing = True
+                    elif content[0] == 'target':
+                        self.myAgent.toggleOccupied()
+                        target = eval(content[1])
+                        planner = random.choice(self.myAgent.pf)
+                        print(self.myAgent.name, "should rescue", target)
+                        msg = spade.ACLMessage.ACLMessage()
+                        msg.setPerformative(msg.REQUEST)
+                        msg.setOntology("map")
+                        msg.addReceiver(planner)
+                        msg.setContent({'open': [target], 'ontology': 'rescuer',
+                            'location': self.myAgent.position})
+                        self.myAgent.send(msg)
+            # We are waiting for a path
+            if self.myAgent.occupied and not self.myAgent.isrescueing:
+                msg = self._receive(False)
+                # Receive path messages in supervisor mode
+                if msg:
+                    content = msg.getContent().split(' ', 1)
+                    if content[0] == 'route':
+                        self.myAgent.path = eval(content[1])
+                        print(self.myAgent.name, "Going to rescue", self.myAgent.path)
+                        self.myAgent.ret = [self.myAgent.position]
+                        self.myAgent.isrescueing = True
+                    else:
+                        print(self.myAgent.name, msg.getContent())
+            elif self.myAgent.isrescueing: # go rescue
                 if len(self.myAgent.path) > 0:
                     dst = self.myAgent.path[0]
                     self.myAgent.path = self.myAgent.path[1:]
@@ -34,6 +61,7 @@ class RescueAgent(spade.Agent.Agent):
                         self.myAgent.ret = []
                         self.myAgent.toggleOccupied()
                         self.myAgent.carrying = False
+                        self.myAgent.isrescueing = False
                     else:
                         self.myAgent.ret = [dst] + self.myAgent.ret
                 else:
@@ -45,17 +73,21 @@ class RescueAgent(spade.Agent.Agent):
                     msg = spade.ACLMessage.ACLMessage()
                     msg.setPerformative("inform")
                     msg.setOntology("rescuer")
-                    msg.addReceiver(self.myAgent.ship)
+                    if self.myAgent.sv:
+                        msg.addReceiver(self.myAgent.sv)
+                    else:
+                        msg.addReceiver(self.myAgent.ship)
                     msg.setContent("carrying {}".format(self.myAgent.position))
                     self.myAgent.send(msg)
 
 
-    class DiscoverServicesBehav(spade.Behaviour.OneShotBehaviour):
+    class DiscoverServicesBehav(spade.Behaviour.PeriodicBehaviour):
         def onStart(self):
             print(self.myAgent.name, "Starting service discovery")
 
         @backtrace
-        def _process(self):
+        def _onTick(self):
+            # Discover mothership
             sd = spade.DF.ServiceDescription()
             sd.setType("mothership")
             dad = spade.DF.DfAgentDescription()
@@ -66,18 +98,44 @@ class RescueAgent(spade.Agent.Agent):
                 print(self.myAgent.name, "switching to mothership")
                 self.myAgent.ship = result[0].getAID()
             else:
-                print("MOTHERSHIP NOT FOUND")
+                # Discover supervisor and other agents
+                sd = spade.DF.ServiceDescription()
+                sd.setType("supervisor")
+                dad = spade.DF.DfAgentDescription()
+                dad.addService(sd)
+                result = self.myAgent.searchService(dad)
+                if len(result):
+                    print(self.myAgent.name, "switching to supervisor")
+                    self.myAgent.sv = result[0].getAID()
+
+                    # Discover pathfinders
+                    sd = spade.DF.ServiceDescription()
+                    sd.setType("pathfinder")
+                    dad = spade.DF.DfAgentDescription()
+                    dad.addService(sd)
+                    result = self.myAgent.searchService(dad)
+                    if len(result):
+                        self.myAgent.pf = [pf.getAID() for pf in result]
+
+            # Stop this behaviour if we found something
+            if self.myAgent.ship or (self.myAgent.sv and self.myAgent.pf):
+                print(self.myAgent.name, "removing discovery behaviour")
+                self.myAgent.removeBehaviour(self)
+
 
     def _setup(self):
         print("Starting Rescuer agent {}...".format(self.name))
         self.is_setup = False
 
-        self.ship = None
+        self.ship = False
+        self.sv   = False
+        self.pf   = False
         self.path = []
         self.ret = []
         self.carrying = False
         self.x = 1
         self.y = 1
+        self.isrescueing = False
 
         self.occupied = False
         self.sd = spade.DF.ServiceDescription()
@@ -96,7 +154,7 @@ class RescueAgent(spade.Agent.Agent):
         rb = self.RescueBehav(1)
         self.addBehaviour(rb, rt)
 
-        self.addBehaviour(self.DiscoverServicesBehav(), None)
+        self.addBehaviour(self.DiscoverServicesBehav(.1), None)
 
         self.is_setup = True
 

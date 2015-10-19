@@ -92,7 +92,8 @@ class SearchAgent(spade.Agent.Agent):
                     msg.setOntology("map")
                     msg.addReceiver(planner)
                     msg.setConversationId(self.myAgent.pathcnt)
-                    msg.setContent({'open': dest, 'location': self.myAgent.position})
+                    msg.setContent({'open': dest, 'location': self.myAgent.position,
+                        'ontology': 'searcher'})
                     self.myAgent.send(msg)
                     self._exitcode = self.myAgent.TRANS_DEFAULT
                 else:

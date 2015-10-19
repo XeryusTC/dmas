@@ -27,7 +27,7 @@ class PathFinder(spade.Agent.Agent):
 
                 rep = msg.createReply()
                 if self.myAgent.sv:
-                    rep.setOntology("searcher")
+                    rep.setOntology(content['ontology'])
                 else:
                     rep.setPerformative("inform")
                 rep.setContent("route {}".format(path))

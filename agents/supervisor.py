@@ -39,7 +39,6 @@ class SupervisorAgent(spade.Agent.Agent):
                         reply.setPerformative(reply.INFORM)
                         reply.setContent("route {}".format([new]))
                         self.myAgent.send(reply)
-                        print("Send an agent to:", new)
                     # otherwise pick a random position from the open list to
                     # send the agent to
                     else:
@@ -50,7 +49,6 @@ class SupervisorAgent(spade.Agent.Agent):
                             # Send the entire list of open location so the
                             # pathfinder can do the hard work
                             loc = list(self.myAgent.open)
-                        print(self.myAgent.name, "Searcher should plan to:", loc)
                         reply = msg.createReply()
                         reply.setPerformative(reply.INFORM)
                         reply.setContent("destination {}".format(loc))
@@ -62,6 +60,26 @@ class SupervisorAgent(spade.Agent.Agent):
         @backtrace
         def _onTick(self):
             msg = self._receive(False)
+            while msg:
+                msg = self._receive(False)
+
+            if len(self.myAgent.targets):
+                # Find a rescuer to send to the target
+                sd = spade.DF.ServiceDescription()
+                sd.setType("rescue")
+                sd.setName("available")
+                dad = spade.DF.DfAgentDescription()
+                dad.addService(sd)
+                result = self.myAgent.searchService(dad)
+                if len(result):
+                    rescuer = result[0].getAID()
+                    target = self.myAgent.targets.pop()
+                    msg = spade.ACLMessage.ACLMessage()
+                    msg.setOntology("rescuer")
+                    msg.addReceiver(rescuer)
+                    msg.setContent("target {}".format(target))
+                    self.myAgent.send(msg)
+                    print(self.myAgent.name, "send", rescuer.getName(), "to", target)
 
         def onEnd(self):
             # hacked in deregistering of services
