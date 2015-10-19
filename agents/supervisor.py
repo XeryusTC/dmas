@@ -23,7 +23,7 @@ class SupervisorAgent(spade.Agent.Agent):
                         new = eval(content[1])
                         for loc in new:
                             self.myAgent.addOpen(loc[:2])
-                            if loc[2] == maze.TARGET:
+                            if loc[2] == maze.TARGET and loc[:2] not in self.myAgent.saved:
                                 self.myAgent.targets.add(loc[:2])
                     if content[0] == "visited":
                         loc = eval(content[1])
@@ -74,6 +74,7 @@ class SupervisorAgent(spade.Agent.Agent):
                 if len(result):
                     rescuer = result[0].getAID()
                     target = self.myAgent.targets.pop()
+                    self.myAgent.saved.add(target)
                     msg = spade.ACLMessage.ACLMessage()
                     msg.setOntology("rescuer")
                     msg.addReceiver(rescuer)
@@ -99,6 +100,7 @@ class SupervisorAgent(spade.Agent.Agent):
         self.visited = set()
         self.open    = set()
         self.targets = set()
+        self.saved   = set()
 
         self.addBehaviour(self.RegisterServicesBehav(), None)
 

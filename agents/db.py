@@ -20,7 +20,10 @@ class DatabaseAgent(spade.Agent.Agent):
                     content = eval(msg.getContent())
                     pos = content['pos']
                     data = content['data']
-                    self.myAgent.map.update(pos[0], pos[1], data)
+                    if isinstance(data, list):
+                        self.myAgent.map.update(pos[0], pos[1], data)
+                    else:
+                        self.myAgent.map.updatePosition(pos[0], pos[1], data)
 
     class RequestInformationBehaviour(spade.Behaviour.PeriodicBehaviour):
         @backtrace

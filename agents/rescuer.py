@@ -2,6 +2,7 @@ from __future__ import print_function
 import random
 import spade
 
+from maze import maze
 from util import backtrace
 
 class RescueAgent(spade.Agent.Agent):
@@ -79,6 +80,15 @@ class RescueAgent(spade.Agent.Agent):
                         msg.addReceiver(self.myAgent.ship)
                     msg.setContent("carrying {}".format(self.myAgent.position))
                     self.myAgent.send(msg)
+                    # when under supervisor, update the database
+                    if self.myAgent.sv:
+                        dbmsg = spade.ACLMessage.ACLMessage()
+                        dbmsg.setPerformative("inform")
+                        dbmsg.addReceiver(spade.AID.aid("db@127.0.0.1",
+                            ["xmpp://db@127.0.0.1"]))
+                        dbmsg.setContent({'pos': self.myAgent.position,
+                            'data': maze.PATH_VISITED})
+                        self.myAgent.send(dbmsg)
 
 
     class DiscoverServicesBehav(spade.Behaviour.PeriodicBehaviour):
