@@ -24,7 +24,7 @@ class GNUI(object):
 
 		cv2.imshow("GNUI", screen)
 
-		cv2.waitKey(0)
+		cv2.waitKey(20)
 
 	def drawMap(self, screen, map):
 		idx = 0

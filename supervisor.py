@@ -47,8 +47,7 @@ def main():
 
     try:
         for i in range(100000):
-            pos = list(searchm) + list(rescuem)
-            display.update(db.map.getMap(), pos)
+            display.update(db.map.getMap(), list(searchm), list(rescuem))
             time.sleep(.1)
     except KeyboardInterrupt:
         pass
