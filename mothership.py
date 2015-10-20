@@ -22,6 +22,7 @@ def main(WIDTH, HEIGHT, SEARCHERS, RESCUERS):
     comq    = mp.Queue()
 
     m = Maze(WIDTH, HEIGHT)
+    print(type(mazem), type(m.maze))
     mazem[:] = m.maze
     m.maze = mazem
     display = GNUI(WIDTH, HEIGHT, "Map")
@@ -184,4 +185,4 @@ def mothermanager(comq):
     print "Supervisor stopped"
 
 if __name__ == '__main__':
-    main(32, 16, range(3), range(3))
+    main(15, 10, range(3), range(3))
