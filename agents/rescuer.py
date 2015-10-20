@@ -36,12 +36,11 @@ class RescueAgent(spade.Agent.Agent):
                     elif content[0] == 'target':
                         self.myAgent.toggleOccupied()
                         target = eval(content[1])
-                        planner = random.choice(self.myAgent.pf)
                         print(self.myAgent.name, "should rescue", target)
                         msg = spade.ACLMessage.ACLMessage()
                         msg.setPerformative(msg.REQUEST)
                         msg.setOntology("map")
-                        msg.addReceiver(planner)
+                        msg.addReceiver(self.myAgent.pf)
                         msg.setContent({'open': [target], 'ontology': 'rescuer',
                             'location': self.myAgent.position})
                         self.myAgent.send(msg)
@@ -134,7 +133,7 @@ class RescueAgent(spade.Agent.Agent):
                     dad.addService(sd)
                     result = self.myAgent.searchService(dad)
                     if len(result):
-                        self.myAgent.pf = [pf.getAID() for pf in result]
+                        self.myAgent.pf = result[0].getAID()
 
             # Stop this behaviour if we found something
             if self.myAgent.ship or (self.myAgent.sv and self.myAgent.pf):
