@@ -83,7 +83,7 @@ class Mothership(spade.Agent.Agent):
                         new = eval(sc[1])
                         for loc in new:
                             self.myAgent.addOpen(loc[:2])
-                            if loc[2] == maze.TARGET:
+                            if loc[2] == maze.TARGET and loc[:2] not in self.myAgent.found:
                                 self.myAgent.targets.add(loc[:2])
                                 print(self.myAgent.targets)
                 elif perf == "request":
@@ -177,7 +177,9 @@ class Mothership(spade.Agent.Agent):
                     rMsg = spade.ACLMessage.ACLMessage(spade.ACLMessage.ACLMessage.REQUEST)
                     rMsg.setOntology("rescuer")
                     rMsg.addReceiver(rescuer)
-                    rMsg.setContent("rescue {}".format([self.myAgent.targets.pop()]))
+                    target = self.myAgent.targets.pop()
+                    self.myAgent.found.add(target)
+                    rMsg.setContent("rescue {}".format([target]))
                     self.myAgent.send(rMsg)
 
     class RegisterServicesBehav(spade.Behaviour.OneShotBehaviour):
@@ -207,6 +209,7 @@ class Mothership(spade.Agent.Agent):
         self.open    = set()
         self.queue = {}
         self.targets = set()
+        self.found = set()
 
         self.addBehaviour(self.RegisterServicesBehav(), None)
 
