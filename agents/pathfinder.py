@@ -23,7 +23,12 @@ class PathFinder(spade.Agent.Agent):
                 if 'map' not in content.keys():
                     path = self.superpath(content['location'], content['open'])
                 else:
-                    path = self.motherpath(content['map'], content['location'], content['open'])
+                    try:
+                        path = self.motherpath(content['map'], content['location'],
+                                content['open'])
+                    except:
+                        print(self.myAgent.name, "error with", content)
+                        raise
 
                 rep = msg.createReply()
                 if self.myAgent.sv:

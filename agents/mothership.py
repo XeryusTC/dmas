@@ -31,7 +31,9 @@ class Mothership(spade.Agent.Agent):
                                                     ["xmpp://path@127.0.0.1"]))
 
                         try:
-                            end = list(status['end'])
+                            end = status['end']
+                            if isinstance(end, tuple):
+                                end = [end]
                         except:
                             end = list(self.myAgent.open)
                         planMsg.setContent({'map': content[1], 'open': end,
@@ -88,7 +90,6 @@ class Mothership(spade.Agent.Agent):
                                 self.myAgent.targets.add(loc[:2])
                                 print(self.myAgent.name, self.myAgent.targets)
                 elif perf == "request":
-                    print("got request")
                     loc = eval(msg.getContent())
                     new = [(loc[0] + x, loc[1] + y) for (x, y) in self.moves
                             if (loc[0] + x, loc[1] + y) in list(self.myAgent.open)]
@@ -158,12 +159,11 @@ class Mothership(spade.Agent.Agent):
                         self.myAgent.queue[len(self.myAgent.queue)] = {'original': msg,
                                                'start': cont['start'],
                                                'end': cont['end'],
-                                               'map': None}
+                                               'map': None, 'additional':2}
                         dbMsg.setContent("MAP")
                         self.myAgent.send(dbMsg)
 
             if len(self.myAgent.targets) > 0:
-                print(self.myAgent.name, "Got targets left")
                 # Find all available rescuers
                 sd = spade.DF.ServiceDescription()
                 sd.setType("rescue")
@@ -173,7 +173,6 @@ class Mothership(spade.Agent.Agent):
 
                 result = self.myAgent.searchService(dad)
                 #send a path to the first available rescuer
-                print([a.asRDFXML() for a in result])
                 while len(result) > 0 and len(self.myAgent.targets) > 0:
                     rescuer = result[0].getAID()
                     del result[0]
@@ -184,7 +183,7 @@ class Mothership(spade.Agent.Agent):
                     self.myAgent.found.add(target)
                     rMsg.setContent("rescue {}".format([target]))
                     self.myAgent.send(rMsg)
-                    print(self.myAgent.name, "send", rescuer, "to", target)
+                    print(self.myAgent.name, "send", rescuer.getName(), "to", target)
 
     class RegisterServicesBehav(spade.Behaviour.OneShotBehaviour):
         def onSetup(self):
