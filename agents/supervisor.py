@@ -68,7 +68,6 @@ class SupervisorAgent(spade.Agent.Agent):
                     self.myAgent.saved.discard(target)
                     self.myAgent.targets.add(target)
                     print(self.myAgent.name, "rescuer could not find path to", target)
-                    print(self.myAgent.targets, self.myAgent.saved)
                 else:
                     print(self.myAgent.name, "UNKNOWN MESSAGE", msg.getContent())
                 msg = self._receive(False)

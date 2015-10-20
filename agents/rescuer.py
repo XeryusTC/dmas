@@ -162,6 +162,7 @@ class RescueAgent(spade.Agent.Agent):
             if self.myAgent.ship or (self.myAgent.sv and self.myAgent.pf):
                 print(self.myAgent.name, "removing discovery behaviour")
                 self.myAgent.removeBehaviour(self)
+                self.myAgent.toggleOccupied()
 
 
     def _setup(self):
@@ -178,10 +179,10 @@ class RescueAgent(spade.Agent.Agent):
         self.y = 1
         self.isrescueing = False
 
-        self.occupied = False
+        self.occupied = True
         self.sd = spade.DF.ServiceDescription()
         self.sd.setType("rescue")
-        self.sd.setName("available")
+        self.sd.setName("occupied")
         self.dad = spade.DF.DfAgentDescription()
         self.dad.addService(self.sd)
         self.dad.setAID(self.getAID())

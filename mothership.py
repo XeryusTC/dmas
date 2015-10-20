@@ -22,10 +22,8 @@ def main(WIDTH, HEIGHT, SEARCHERS, RESCUERS):
     comq    = mp.Queue()
 
     m = Maze(WIDTH, HEIGHT)
-    print(type(mazem), type(m.maze))
     mazem[:] = m.maze
     m.maze = mazem
-    print(type(mazem), type(m.maze))
     display = GNUI(WIDTH, HEIGHT, "Map")
     display2 = GNUI(WIDTH, HEIGHT, "Maze")
 
@@ -54,7 +52,9 @@ def main(WIDTH, HEIGHT, SEARCHERS, RESCUERS):
             display2.update(m.getMaze(),list(searchm), list(rescuem))
             time.sleep(.1)
 
-            print isReady(db.map.getMap(), rescuem)
+            if (isReady(db.map.getMap(), rescuem)):
+                print("FINISHED!")
+                break;
     except KeyboardInterrupt:
         pass
     except Exception, ex:

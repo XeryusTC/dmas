@@ -34,7 +34,8 @@ class Mothership(spade.Agent.Agent):
                             end = list(status['end'])
                         except:
                             end = list(self.myAgent.open)
-                        planMsg.setContent({'map' : content[1], 'open' : end, 'location' : status['start']})
+                        planMsg.setContent({'map': content[1], 'open': end,
+                            'location': status['start'], 'ontology': 'map'})
                         self.myAgent.send(planMsg)
                     else:
                         reply = msg.createReply()
@@ -85,7 +86,6 @@ class Mothership(spade.Agent.Agent):
                             self.myAgent.addOpen(loc[:2])
                             if loc[2] == maze.TARGET and loc[:2] not in self.myAgent.found:
                                 self.myAgent.targets.add(loc[:2])
-                                print(self.myAgent.targets)
                 elif perf == "request":
                     print("got request")
                     loc = eval(msg.getContent())
@@ -144,7 +144,7 @@ class Mothership(spade.Agent.Agent):
                         secMsg.setContent({'pos': pos,
                                            'data': maze.PATH_VISITED})
                         self.myAgent.send(secMsg)
-                        
+
                 if perf == "request":
                     content = msg.getContent().split(' ',1)
                     if content[0] == "route":
@@ -171,7 +171,6 @@ class Mothership(spade.Agent.Agent):
 
                 result = self.myAgent.searchService(dad)
                 #send a path to the first available rescuer
-                print([a.asRDFXML() for a in result])
                 if len(result):
                     rescuer = result[0].getAID()
                     rMsg = spade.ACLMessage.ACLMessage(spade.ACLMessage.ACLMessage.REQUEST)
