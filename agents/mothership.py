@@ -30,7 +30,11 @@ class Mothership(spade.Agent.Agent):
                         planMsg.addReceiver(spade.AID.aid("path@127.0.0.1",
                                                     ["xmpp://path@127.0.0.1"]))
 
-                        planMsg.setContent({'map' : content[1], 'open' : list(self.myAgent.open), 'location' : status['start']})
+                        try:
+                            end = list(status['end'])
+                        except:
+                            end = list(self.myAgent.open)
+                        planMsg.setContent({'map' : content[1], 'open' : end, 'location' : status['start']})
                         self.myAgent.send(planMsg)
                     else:
                         reply = msg.createReply()
@@ -124,6 +128,39 @@ class Mothership(spade.Agent.Agent):
                     if content[0] == "carrying":
                         print("Agent is carrying target")
                         pos = eval(content[1])
+                        dbMsg = spade.ACLMessage.ACLMessage(msg.REQUEST)
+                        dbMsg.setOntology("map")
+                        db = spade.AID.aid("db@127.0.0.1",
+                                                ["xmpp://db@127.0.0.1"])
+                        dbMsg.addReceiver(db)
+                        dbMsg.setConversationId(len(self.myAgent.queue))
+                        self.myAgent.queue[len(self.myAgent.queue)] = {'original': msg,
+                                               'start': pos,
+                                               'end': eval(content[1]),
+                                               'map': None}
+                        dbMsg.setContent("MAP")
+                        secMsg = spade.ACLMessage.ACLMessage(msg.INFORM)
+                        secMsg.addReceiver(db)
+                        secMsg.setContent({'pos': pos,
+                                           'data': maze.PATH_VISITED})
+                        self.myAgent.send(secMsg)
+                        
+                if perf == "request":
+                    content = msg.getContent().split(' ',1)
+                    if content[0] == "route":
+                        cont = eval(content[1])
+                        dbMsg = spade.ACLMessage.ACLMessage(msg.REQUEST)
+                        dbMsg.setOntology("map")
+                        dbMsg.addReceiver(spade.AID.aid("db@127.0.0.1",
+                                                ["xmpp://db@127.0.0.1"]))
+                        dbMsg.setConversationId(len(self.myAgent.queue))
+                        self.myAgent.queue[len(self.myAgent.queue)] = {'original': msg,
+                                               'start': cont['start'],
+                                               'end': cont['end'],
+                                               'map': None}
+                        dbMsg.setContent("MAP")
+                        self.myAgent.send(dbMsg)
+
             if len(self.myAgent.targets) > 0:
                 # Find all available rescuers
                 sd = spade.DF.ServiceDescription()
@@ -137,7 +174,7 @@ class Mothership(spade.Agent.Agent):
                 print([a.asRDFXML() for a in result])
                 if len(result):
                     rescuer = result[0].getAID()
-                    rMsg = spade.ACLMessage.ACLMessage()
+                    rMsg = spade.ACLMessage.ACLMessage(spade.ACLMessage.ACLMessage.REQUEST)
                     rMsg.setOntology("rescuer")
                     rMsg.addReceiver(rescuer)
                     rMsg.setContent("rescue {}".format([self.myAgent.targets.pop()]))

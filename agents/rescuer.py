@@ -22,11 +22,17 @@ class RescueAgent(spade.Agent.Agent):
                 if msg:
                     content = msg.getContent().split(' ', 1)
                     if content[0] == 'rescue':
-                        self.myAgent.path = eval(content[1])
                         print(self.myAgent.name, "Going to rescue", self.myAgent.path)
                         self.myAgent.ret = [self.myAgent.position]
+                        self.myAgent.target = eval(content[1])
                         self.myAgent.toggleOccupied()
-                        self.myAgent.isrescueing = True
+                        self.myAgent.isrescueing = False
+                        reply = msg.createReply()
+                        reply.setPerformative(msg.REQUEST)
+                        cont = {'start': self.myAgent.position,
+                                'end': self.myAgent.target}
+                        reply.setContent("route {}".format(cont))
+                        self.myAgent.send(reply)
                     elif content[0] == 'target':
                         self.myAgent.toggleOccupied()
                         target = eval(content[1])
