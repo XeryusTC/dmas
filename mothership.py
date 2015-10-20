@@ -74,9 +74,7 @@ def main(WIDTH, HEIGHT, SEARCHERS, RESCUERS):
     pf.join()
     print "Done."
 
-
 def isReady(m, rescuers):
-    
     for row in m:
         if (0 in row) or (3 in row):
             return False
@@ -86,7 +84,7 @@ def isReady(m, rescuers):
             return False
 
     return True
- 
+
 def searchmanager(searchers, pos, comq, m):
     print "Starting searchers"
     search = [SearchAgent("search{}@127.0.0.1".format(i), "secret")

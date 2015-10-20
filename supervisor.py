@@ -167,5 +167,16 @@ def supermanager(comq):
     su.stop()
     print "Supervisor stopped"
 
+def isReady(m, rescuers):
+    for row in m:
+        if (0 in row) or (3 in row):
+            return False
+
+    for rescuer in rescuers:
+        if not (1,1) == rescuer:
+            return False
+
+    return True
+
 if __name__ == '__main__':
     main(32, 16, range(3), range(3))
