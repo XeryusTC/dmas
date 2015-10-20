@@ -50,6 +50,9 @@ def main(WIDTH, HEIGHT, SEARCHERS, RESCUERS):
             display.update(db.map.getMap(), list(searchm), list(rescuem))
             display2.update(m.getMaze(), list(searchm), list(rescuem))
             time.sleep(.1)
+            if isReady(db.map.getMap(), rescuem):
+                print("FINISHED!")
+                break
     except KeyboardInterrupt:
         pass
     except Exception, ex:

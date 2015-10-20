@@ -70,8 +70,16 @@ class RescueAgent(spade.Agent.Agent):
                             self.myAgent.toggleOccupied()
                             self.myAgent.isrescueing = False
                             self.myAgent.carrying = False
+                    elif content[0] == 'target':
+                        print(self.myAgent.name,
+                            "got duplicate target, respond with nopath to reset")
+                        reply = spade.ACLMessage.ACLMessage()
+                        reply.setOntology("rescuer")
+                        reply.addReceiver(self.myAgent.sv)
+                        reply.setContent('nopath {}'.format(eval(content[1])))
+                        self.myAgent.send(reply)
                     else:
-                        print(self.myAgent.name, msg.getContent())
+                        print(self.myAgent.name, "GOT UNKOWN MESSAGE", msg.getContent())
             elif self.myAgent.isrescueing: # go rescue
                 if len(self.myAgent.path) > 0:
                     dst = self.myAgent.path[0]
