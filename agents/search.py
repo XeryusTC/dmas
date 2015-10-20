@@ -79,6 +79,15 @@ class SearchAgent(spade.Agent.Agent):
                         self.myAgent.route = route
                         self.myAgent.pathcnt += 1
                         self._exitcode = self.myAgent.TRANS_PATH_WALK
+                        # in the case that the route is longer, mark the end as
+                        # visited so other searchers dont plan the same path
+                        if len(route) > 1 and self.myAgent.sv:
+                            svmsg = spade.ACLMessage.ACLMessage()
+                            svmsg.setPerformative("inform")
+                            svmsg.setOntology("searcher")
+                            svmsg.addReceiver(self.myAgent.sv)
+                            svmsg.setContent("visited {}".format(route[-1]))
+                            self.myAgent.send(svmsg)
                     else:
                         print(self.myAgent.name, "discarding route:", route,
                                 msg.getConversationId(), self.myAgent.pathcnt)
