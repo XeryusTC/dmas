@@ -5,13 +5,13 @@ from maze import maze
 
 class GNUI(object):
 
-	def __init__(self, w, h):
+	def __init__(self, w, h, name):
 		self.size = 10
-
+		self.name = name
 		self.width = (w * 2 + 1) * self.size
 		self.height = (h * 2 + 1) * self.size
 
-		cv2.namedWindow("GNUI")
+		cv2.namedWindow(name)
 
 	def update(self, map, agents, rescuers = []):
 		screen = np.zeros((self.height, self.width, 3), 'uint8')
@@ -22,7 +22,7 @@ class GNUI(object):
 
 		screen = self.drawRescuers(screen, rescuers)
 
-		cv2.imshow("GNUI", screen)
+		cv2.imshow(self.name, screen)
 
 		cv2.waitKey(20)
 

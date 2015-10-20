@@ -3,6 +3,8 @@ import time
 import traceback
 import Queue
 
+import numpy as np
+
 from agents.db import DatabaseAgent
 from agents.pathfinder import PathFinder
 from agents.search import SearchAgent
@@ -20,11 +22,12 @@ RESCUERS  = range(3)
 def main():
     manager = mp.Manager()
     searchm = manager.list()
-    rescuem = manager.list()
+    rescuem = manager.list() 
     comq    = mp.Queue()
 
     m = Maze(WIDTH, HEIGHT)
-    display = GNUI(WIDTH, HEIGHT)
+    display = GNUI(WIDTH, HEIGHT, "Map")
+    display2 = GNUI(WIDTH, HEIGHT, "Maze")
 
     display.update(m.getMaze(), [])
 
@@ -48,6 +51,7 @@ def main():
     try:
         for i in range(100000):
             display.update(db.map.getMap(), list(searchm), list(rescuem))
+            display2.update(np.array(m.maze),list(searchm), list(rescuem))
             time.sleep(.1)
     except KeyboardInterrupt:
         pass

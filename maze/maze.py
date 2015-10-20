@@ -1,5 +1,8 @@
 from random import shuffle, randrange, randint
 
+import cv2
+import numpy as np
+
 PATH = 0
 WALL = 1
 PATH_VISITED = 2
@@ -8,7 +11,7 @@ ACCESSIBLE = (PATH, PATH_VISITED, TARGET)
 
 class Maze(object):
 
-    def __init__(self, w = 16, h = 8, targets = 10):
+    def __init__(self, w = 16, h = 8, targets = 20):
         self.w = w
         self.h = h
         self.maze = self.make_maze(w, h)
@@ -66,11 +69,12 @@ class Maze(object):
         return self.maze
 
     def rescue(self, position):
-        (y,x) = position
+        (x,y) = position
         print("CLEAR TARGET LOCATION:")
         print(position)
+        print((len(self.maze), len(self.maze[0])))
 
-        self.maze[y][x] = PATH_VISITED
+        self.maze[y][x] = PATH
 
     def make_maze(self, w, h):
         vis = [[0] * w + [1] for _ in range(h)] + [[1] * (w + 1)]
