@@ -36,6 +36,7 @@ class RescueAgent(spade.Agent.Agent):
                     elif content[0] == 'target':
                         self.myAgent.toggleOccupied()
                         target = eval(content[1])
+                        self.myAgent.target = target
                         print(self.myAgent.name, "should rescue", target)
                         msg = spade.ACLMessage.ACLMessage()
                         msg.setPerformative(msg.REQUEST)
@@ -51,10 +52,24 @@ class RescueAgent(spade.Agent.Agent):
                 if msg:
                     content = msg.getContent().split(' ', 1)
                     if content[0] == 'route':
-                        self.myAgent.path = eval(content[1])
-                        print(self.myAgent.name, "Going to rescue", self.myAgent.path)
-                        self.myAgent.ret = [self.myAgent.position]
-                        self.myAgent.isrescueing = True
+                        path = eval(content[1])
+                        if len(path):
+                            self.myAgent.path = eval(content[1])
+                            print(self.myAgent.name, "Going to rescue", self.myAgent.path)
+                            self.myAgent.ret = [self.myAgent.position]
+                            self.myAgent.isrescueing = True
+                        else:
+                            print(self.myAgent.name, "no path to target",
+                                    self.myAgent.target)
+                            # No path to target, notify supervisor
+                            reply = spade.ACLMessage.ACLMessage()
+                            reply.setOntology("rescuer")
+                            reply.addReceiver(self.myAgent.sv)
+                            reply.setContent('nopath {}'.format(self.myAgent.target))
+                            self.myAgent.send(reply)
+                            self.myAgent.toggleOccupied()
+                            self.myAgent.isrescueing = False
+                            self.myAgent.carrying = False
                     else:
                         print(self.myAgent.name, msg.getContent())
             elif self.myAgent.isrescueing: # go rescue

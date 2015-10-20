@@ -25,7 +25,7 @@ class SupervisorAgent(spade.Agent.Agent):
                             self.myAgent.addOpen(loc[:2])
                             if loc[2] == maze.TARGET and loc[:2] not in self.myAgent.saved:
                                 self.myAgent.targets.add(loc[:2])
-                    if content[0] == "visited":
+                    elif content[0] == "visited":
                         loc = eval(content[1])
                         self.myAgent.addVisited(loc)
                 elif perf == "request":
@@ -61,6 +61,16 @@ class SupervisorAgent(spade.Agent.Agent):
         def _onTick(self):
             msg = self._receive(False)
             while msg:
+                content = msg.getContent().split(' ', 1)
+                if content[0] == 'nopath':
+                    # No path means that we put the target back in the set
+                    target = eval(content[1])
+                    self.myAgent.saved.discard(target)
+                    self.myAgent.targets.add(target)
+                    print(self.myAgent.name, "rescuer could not find path to", target)
+                    print(self.myAgent.targets, self.myAgent.saved)
+                else:
+                    print(self.myAgent.name, "UNKNOWN MESSAGE", msg.getContent())
                 msg = self._receive(False)
 
             if len(self.myAgent.targets):
