@@ -66,7 +66,9 @@ class Maze(object):
         return self.maze
 
     def rescue(self, position):
-        (x,y) = position
+        (y,x) = position
+        print("CLEAR TARGET LOCATION:")
+        print(position)
 
         self.maze[y][x] = PATH_VISITED
 
