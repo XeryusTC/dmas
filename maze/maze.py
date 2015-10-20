@@ -65,6 +65,11 @@ class Maze(object):
     def getMaze(self):
         return self.maze
 
+    def rescue(self, position):
+        (x,y) = position
+
+        self.maze[y][x] = PATH_VISITED
+
     def make_maze(self, w, h):
         vis = [[0] * w + [1] for _ in range(h)] + [[1] * (w + 1)]
         ver = [["10"] * w + ['1'] for _ in range(h)] + [[]]

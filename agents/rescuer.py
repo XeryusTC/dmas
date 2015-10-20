@@ -75,6 +75,9 @@ class RescueAgent(spade.Agent.Agent):
                     print(self.myAgent.name, "arrived at target")
                     print(self.myAgent.ret)
                     # we are at the target, turn arround, notify mothership
+
+                    self.myAgent.maze.rescue(self.myAgent.position)
+
                     self.myAgent.path = self.myAgent.ret
                     self.myAgent.carrying = True
                     msg = spade.ACLMessage.ACLMessage()
@@ -192,6 +195,9 @@ class RescueAgent(spade.Agent.Agent):
     def move(self, x, y):
         self.x = x
         self.y = y
+
+    def setMaze(self, m):
+        self.maze = m
 
     @property
     def position(self):
