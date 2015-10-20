@@ -36,7 +36,7 @@ def main():
     time.sleep(1)
 
     searchers = mp.Process(target=searchmanager, args=(SEARCHERS, searchm, comq, m))
-    rescuers = mp.Process(target=rescuemanager, args=(RESCUERS, rescuem, comq))
+    rescuers = mp.Process(target=rescuemanager, args=(RESCUERS, rescuem, comq, m))
     pf = mp.Process(target=pathmanager, args=(comq,))
     supervisor = mp.Process(target=supermanager, args=(comq,))
 
@@ -99,11 +99,12 @@ def searchmanager(searchers, pos, comq, m):
         s.stop()
     print "Searchers stopped"
 
-def rescuemanager(rescuers, pos, comq):
+def rescuemanager(rescuers, pos, comq, m):
     print "Starting rescuers"
     rescue = [RescueAgent("rescue{}@127.0.0.1".format(i), "secret")
             for i in rescuers]
     for r in rescue:
+        r.setMaze(m)
         r.start()
     time.sleep(.1)
 
