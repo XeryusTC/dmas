@@ -28,6 +28,7 @@ class Maze(object):
 
                 if self.maze[y][x] == PATH:
                     self.maze[y][x] = TARGET
+                    self.maze[:] = self.maze
                     searching = False
 
     def _addOpenings(self, openings):
@@ -40,6 +41,7 @@ class Maze(object):
 
                 if self.maze[y][x] == WALL:
                     self.maze[y][x] = PATH
+                    self.maze[:] = self.maze
                     searching = False
 
     def getData(self, x, y):
@@ -74,7 +76,10 @@ class Maze(object):
         print(position)
         print((len(self.maze), len(self.maze[0])))
 
-        self.maze[y][x] = PATH
+        tmp = list(self.maze)
+        tmp[y][x] = PATH
+        self.maze[:] = tmp
+        print(type(self.maze), self.maze[y][x])
 
     def make_maze(self, w, h):
         vis = [[0] * w + [1] for _ in range(h)] + [[1] * (w + 1)]

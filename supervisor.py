@@ -21,12 +21,17 @@ def main():
     manager = mp.Manager()
     searchm = manager.list()
     rescuem = manager.list()
+    mazem   = manager.list()
     comq    = mp.Queue()
 
     m = Maze(WIDTH, HEIGHT)
-    display = GNUI(WIDTH, HEIGHT)
+    mazem[:] = m.maze
+    m.maze = mazem
+    display = GNUI(WIDTH, HEIGHT, "Map")
+    display2 = GNUI(WIDTH, HEIGHT, "Maze")
 
     display.update(m.getMaze(), [])
+    display2.update(m.getMaze(), [])
 
     db = DatabaseAgent("db@127.0.0.1", "secret")
     db.width = WIDTH
@@ -48,6 +53,7 @@ def main():
     try:
         for i in range(100000):
             display.update(db.map.getMap(), list(searchm), list(rescuem))
+            display2.update(m.getMaze(), list(searchm), list(rescuem))
             time.sleep(.1)
     except KeyboardInterrupt:
         pass

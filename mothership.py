@@ -22,10 +22,15 @@ RESCUERS  = range(3)
 def main():
     manager = mp.Manager()
     searchm = manager.list()
-    rescuem = manager.list() 
+    rescuem = manager.list()
+    mazem   = manager.list()
     comq    = mp.Queue()
 
     m = Maze(WIDTH, HEIGHT)
+    print(type(mazem), type(m.maze))
+    mazem[:] = m.maze
+    m.maze = mazem
+    print(type(mazem), type(m.maze))
     display = GNUI(WIDTH, HEIGHT, "Map")
     display2 = GNUI(WIDTH, HEIGHT, "Maze")
 
@@ -51,7 +56,7 @@ def main():
     try:
         for i in range(100000):
             display.update(db.map.getMap(), list(searchm), list(rescuem))
-            display2.update(np.array(m.maze),list(searchm), list(rescuem))
+            display2.update(m.getMaze(),list(searchm), list(rescuem))
             time.sleep(.1)
     except KeyboardInterrupt:
         pass
