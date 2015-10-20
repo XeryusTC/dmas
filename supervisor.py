@@ -12,12 +12,7 @@ from gnui.gnui import GNUI
 from maze.maze import Maze
 import util
 
-WIDTH     = 32
-HEIGHT    = 16
-SEARCHERS = range(3)
-RESCUERS  = range(3)
-
-def main():
+def main(WIDTH, HEIGHT, SEARCHERS, RESCUERS):
     manager = mp.Manager()
     searchm = manager.list()
     rescuem = manager.list()
@@ -173,4 +168,4 @@ def supermanager(comq):
     print "Supervisor stopped"
 
 if __name__ == '__main__':
-    main()
+    main(32, 16, range(3), range(3))
