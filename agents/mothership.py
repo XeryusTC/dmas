@@ -173,8 +173,10 @@ class Mothership(spade.Agent.Agent):
 
                 result = self.myAgent.searchService(dad)
                 #send a path to the first available rescuer
-                if len(result):
+                print([a.asRDFXML() for a in result])
+                while len(result) > 0 and len(self.myAgent.targets) > 0:
                     rescuer = result[0].getAID()
+                    del result[0]
                     rMsg = spade.ACLMessage.ACLMessage(spade.ACLMessage.ACLMessage.REQUEST)
                     rMsg.setOntology("rescuer")
                     rMsg.addReceiver(rescuer)
