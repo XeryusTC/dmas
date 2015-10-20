@@ -28,7 +28,6 @@ class SearchAgent(spade.Agent.Agent):
     class WalkCorridorBehav(spade.Behaviour.OneShotBehaviour):
         # CORRIDOR_WALK_CODE
         moves = [(0, -1), (0, 1), (-1, 0), (1, 0)]
-
         @backtrace
         def _process(self):
             new = []
@@ -51,6 +50,7 @@ class SearchAgent(spade.Agent.Agent):
 
     class PickPathBehav(spade.Behaviour.OneShotBehaviour):
         # PICK_CORRIDOR_CODE
+        @backtrace
         def _process(self):
             msg = spade.ACLMessage.ACLMessage()
             msg.setPerformative(msg.REQUEST)
@@ -67,9 +67,13 @@ class SearchAgent(spade.Agent.Agent):
 
     class WaitForPathBehav(spade.Behaviour.OneShotBehaviour):
         # WAIT_FOR_PATH_CODE
+        def onStart(self):
+            if self.myAgent.waitPathTimer == None:
+                self.myAgent.waitPathTimer = 4
+
         @backtrace
         def _process(self):
-            msg = self._receive(True, 2)
+            msg = self._receive(False)
             if msg:
                 content = msg.getContent().split(' ', 1)
                 if content[0] == "route":
@@ -110,12 +114,19 @@ class SearchAgent(spade.Agent.Agent):
                     reply.setPerformative(reply.NOT_UNDERSTOOD)
                     self.myAgent.send(reply)
             else:
-                print(self.myAgent.name, "POSSIBLY STUCK, UNSTUCKING")
-                self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
+                if self.myAgent.waitPathTimer < 0:
+                    print(self.myAgent.name, "POSSIBLY STUCK, UNSTUCKING")
+                    self.myAgent.waitPathTimer = None
+                    self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
+                else:
+                    self.myAgent.waitPathTimer -= 0.1
+                    time.sleep(0.1)
+                    self._exitcode = self.myAgent.TRANS_DEFAULT
 
 
     class PathWalkBehav(spade.Behaviour.OneShotBehaviour):
         # PATH_WALK_CODE
+        @backtrace
         def _process(self):
             if self.myAgent.route == []:
                 self._exitcode = self.myAgent.TRANS_CORRIDOR_WALK
@@ -186,6 +197,7 @@ class SearchAgent(spade.Agent.Agent):
         self.pf = []
         self.pathcnt = 0
 
+        self.waitPathTimer = None
 
         temp = spade.Behaviour.ACLTemplate()
         temp.setOntology("searcher")
