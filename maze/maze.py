@@ -72,14 +72,10 @@ class Maze(object):
 
     def rescue(self, position):
         (x,y) = position
-        print("CLEAR TARGET LOCATION:")
-        print(position)
-        print((len(self.maze), len(self.maze[0])))
 
         tmp = list(self.maze)
         tmp[y][x] = PATH
         self.maze[:] = tmp
-        print(type(self.maze), self.maze[y][x])
 
     def make_maze(self, w, h):
         vis = [[0] * w + [1] for _ in range(h)] + [[1] * (w + 1)]
