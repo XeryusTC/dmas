@@ -86,6 +86,7 @@ class Mothership(spade.Agent.Agent):
                             self.myAgent.addOpen(loc[:2])
                             if loc[2] == maze.TARGET and loc[:2] not in self.myAgent.found:
                                 self.myAgent.targets.add(loc[:2])
+                                print(self.myAgent.name, self.myAgent.targets)
                 elif perf == "request":
                     print("got request")
                     loc = eval(msg.getContent())
@@ -162,6 +163,7 @@ class Mothership(spade.Agent.Agent):
                         self.myAgent.send(dbMsg)
 
             if len(self.myAgent.targets) > 0:
+                print(self.myAgent.name, "Got targets left")
                 # Find all available rescuers
                 sd = spade.DF.ServiceDescription()
                 sd.setType("rescue")
@@ -180,6 +182,7 @@ class Mothership(spade.Agent.Agent):
                     self.myAgent.found.add(target)
                     rMsg.setContent("rescue {}".format([target]))
                     self.myAgent.send(rMsg)
+                    print(self.myAgent.name, "send", rescuer, "to", target)
 
     class RegisterServicesBehav(spade.Behaviour.OneShotBehaviour):
         def onSetup(self):

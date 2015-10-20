@@ -95,7 +95,7 @@ class RescueAgent(spade.Agent.Agent):
                         self.myAgent.ret = [dst] + self.myAgent.ret
                 else:
                     print(self.myAgent.name, "arrived at target")
-                    print(self.myAgent.ret)
+                    print(self.myAgent.name, self.myAgent.ret)
                     # we are at the target, turn arround, notify mothership
 
                     self.myAgent.maze.rescue(self.myAgent.position)
