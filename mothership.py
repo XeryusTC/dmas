@@ -14,8 +14,8 @@ from gnui.gnui import GNUI
 from maze.maze import Maze
 import util
 
-WIDTH     = 32
-HEIGHT    = 16
+WIDTH     = 8
+HEIGHT    = 8
 SEARCHERS = range(3)
 RESCUERS  = range(3)
 
@@ -58,6 +58,8 @@ def main():
             display.update(db.map.getMap(), list(searchm), list(rescuem))
             display2.update(m.getMaze(),list(searchm), list(rescuem))
             time.sleep(.1)
+
+            print isReady(db.map.getMap(), rescuem)
     except KeyboardInterrupt:
         pass
     except Exception, ex:
@@ -77,6 +79,19 @@ def main():
     pf.join()
     print "Done."
 
+
+def isReady(m, rescuers):
+    
+    for row in m:
+        if (0 in row) or (3 in row):
+            return False
+
+    for rescuer in rescuers:
+        if not (1,1) == rescuer:
+            return False
+
+    return True
+ 
 def searchmanager(searchers, pos, comq, m):
     print "Starting searchers"
     search = [SearchAgent("search{}@127.0.0.1".format(i), "secret")

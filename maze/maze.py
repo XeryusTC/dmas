@@ -11,11 +11,11 @@ ACCESSIBLE = (PATH, PATH_VISITED, TARGET)
 
 class Maze(object):
 
-    def __init__(self, w = 16, h = 8, targets = 20):
+    def __init__(self, w = 16, h = 8, targets = 2):
         self.w = w
         self.h = h
         self.maze = self.make_maze(w, h)
-        self._addTargets(10)
+        self._addTargets(targets)
         self._addOpenings(50)
 
     def _addTargets(self, targets):
