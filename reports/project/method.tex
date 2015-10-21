@@ -90,25 +90,33 @@ possible. The central brain then sends this path to the searcher so it can
 resume exploring.
 
 \subsection{Experimental design}
-The supervisor is an important link in our system, and we would want it to
+The central brain is an important link in our system, and we would want it to
 be as robust as possible. Therefore we would want to know whether the
-system performs better if the supervisor is one monolithic object or if
-there is division of labour between the agents. For this we implement
-multiple structures for the supervisor, one where the supervisor is a central
-director orchestrating all agents and one where all agents are working together.
+system performs better if the central brain is one monolithic object or if
+there is division of labour between the agents. For this we implemented
+multiple structures for the central brain, one where the brain is a central
+director orchestrating all agents and one where all agents are
+communicating with each other. 
 
-Because the performance is also dependent on the number of search agents, this
-number will also be varied. This will give us a clear overview of the
-different strategies and the interaction with the number of agents.
+To test this, we had different configurations of search agents and rescue
+agents that we placed into a maze of 8 by 8 with 5 targets. The agents had
+to explore the whole maze and rescue all the targets. The time they needed
+to do this was measured. This, included the startup time and the shutdown
+time for the agents. The time needed to rescue all the targets and discover
+the full maze (rescue time) is our indication of performance. The system
+will need to explore the full maze to make sure that all targets are found.
 
-The definition for better is the time it took to rescue the targets.  The
-time will be measured from the start of the simulation until the moment that
-all targets are returned to the start and the entire maze is explored. The last
-condition is included because the system does not know whether all targets
-are recovered until the entire maze has been explored. Because the maze is
-randomly generated, the simulation will be ran several times for each
-combination of supervisor and number of searchers.
+We ran the simulation once with 1 search and 1 rescue agent as a baseline.
+We do not expect to see a difference in the results for this configuration,
+since the mothership should be able to handle one agent as well as the
+distributed supervisor. We also ran the experiment with 3 searchers and 3
+rescuers. And to also see if the number of searcher agents with influence
+the result, we also ran the simulation with 3 rescue agents and 6 search
+agents. 
 
+The simulation was run several times per configuration. All the simulations
+were run on the same machine, to make sure the different rescue times could
+be compared. 
 
 \begin{figure}[h]
 	\centering
