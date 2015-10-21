@@ -34,7 +34,7 @@ consisted of multiple physical agents, one web service that did path
 planning and a supervisor that coordinated the interaction between the two.
 Since there was only one web service to chose from, the system did not do
 any form of negotiation or service discovery yet. They also used one
-ontology for everything.
+ontology for all communication and information.
 
 \subsection{New Idea} 
 
@@ -47,18 +47,18 @@ suspect that this upside does not outweigh the downsides and want to test
 this.
 
 In order to test this, we will create both a monolithic supervisor, the
-mothership, and a distributed agent, where all the responsibilities are
+mothership; and a distributed agent, where all the responsibilities are
 divided among more components. This will allow us to test these two
 different architectures. In the case of the distributed agent most
 communication will go from the robots to special forwarders that
-communicate with the web services. This means that the supervisor will only
-be called when its services are really necessary, relieving the stress from
-this part of the system. 
+communicate with the web services. This means that agents will only communicate
+with the supervisor when they need services it is responsible for, relieving
+the stress from this part of the system.
 
-Another change we will make is that we will make the services discoverable
-instead of hard code them into the service, although we will still only
-have one instance of each web service.  A third change that we want to make
-is in the environment. In \cite{intframe} the environment was simplistic,
+Another change is that the services discoverable instead of hard coding them
+into the agent, although we will still only have one instance of each web
+service so this wouldn't strictly be necessary. A third change that we want to
+make is in the environment. In \cite{intframe} the environment was simplistic,
 whereas we want to use a more complicated maze. This will also increase the
 stress on the system, making it easier to test the different architectures
 for the supervisor. 

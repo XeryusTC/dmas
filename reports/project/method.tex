@@ -1,8 +1,8 @@
-Our simulation consists of a set of agents that try to explore a randomly
+Our simulation consists of a set of agents that try to navigate a randomly
 generated maze, these agents are meant to simulate robots in the real world. 
 They communicate with a set agents that act as soft bots in web services. These
 soft bots support the robots in accomplishing their task to rescue people from
-the maze. For communication between the agents we use SPADE \footnote{https://pypi.python.org/pypi/SPADE} as our top layer.
+the maze. For communication between the agents we use the SPADE \footnote{https://pypi.python.org/pypi/SPADE} framework as our top layer.
 
 \subsection{Simulation Model}
 The simulation consists of two web services, two types of robots and a
@@ -24,7 +24,7 @@ The data store agent represents a web service that allows you to store raw data 
 \subsubsection{Path planner agent}
 The path planner represents a web service that uses the A* algorithm
 \cite{astar} to plan a route through a grid based maze, such as
-\cite{astarweb}. The pseudocode for A* is shown in figure \ref{fig:psuedocode} .
+\cite{astarweb}. The pseudocode for A* is shown in \autoref{fig:pseudocode} .
 
 \begin{figure}[h]
 	\centering
@@ -46,8 +46,8 @@ service to return a route to get to the new search location.
 \subsubsection{Supervisor agent}
 The Supervisor is the central part of the system that makes sure that all
 the components work together. It manages most of the resources and it keeps
-track of where robots are. It also manages all the search robots and makes sure
-that they don't all try to explore the same area.
+track of where robots are. It also directs all the search robots and to make
+sure that they don't all try to explore the same area.
 
 \subsubsection{Interaction}
 Every time a search agent uncovers a new location, it will send a message to
@@ -65,16 +65,19 @@ resume exploring.
 The supervisor is an important link in our system, and we would want it to
 be as robust as possible. Therefore we would want to know whether the
 system performs better if the supervisor is one monolithic object or if
-there is division of labour within the supervisor. For this we implement
-multiple structures for the supervisor, one where the supervisor is one
-object and one where it are multiple agents working together. 
+there is division of labour between the agents. For this we implement
+multiple structures for the supervisor, one where the supervisor is a central
+director orchestrating all agents and one where all agents are working together.
 
 Because the performance is also dependent on the number of search agents, this
 number will also be varied. This will give us a clear overview of the
-different strategies and the interaction with the number of agents. 
+different strategies and the interaction with the number of agents.
 
 The definition for better is the time it took to rescue the targets.  The
-time will be measured from the start of the simulation. Because the maze is
+time will be measured from the start of the simulation until the moment that
+all targets are returned to the start and the entire maze is explored. The last
+condition is included because the system does not know whether all targets
+are recovered until the entire maze has been explored. Because the maze is
 randomly generated, the simulation will be ran several times for each
 combination of supervisor and number of searchers.
 
