@@ -14,6 +14,7 @@ def runExperiment(widht, height, searchers, rescuers):
     mothership.main(width, height, range(searchers), range(rescuers))
     motherend = time()
     spadeProc.terminate()
+    spadeProc.wait()
     sleep(5)
 
     print("=================================")
@@ -25,6 +26,7 @@ def runExperiment(widht, height, searchers, rescuers):
     supervisor.main(width, height, range(searchers), range(rescuers))
     superend = time()
     spadeProc.terminate()
+    spadeProc.wait()
 
     return (motherend - motherstart, superend - superstart)
 
