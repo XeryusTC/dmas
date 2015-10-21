@@ -1,5 +1,28 @@
 \subsection{Discussion}
 
+One important difference between the monolithic and the distributed approach is
+the ease of implementation. The monolithic mothership is complicated but all
+other agents are relatively simple. This makes it hard to implement the
+mothership itself but the agents for the robots and services are trivial to
+implement after their core functionality is implemented. The mothership itself
+becomes quite complicated as there is quite a lot of bookkeeping involved to
+keep track of which responses need to be send to which agents. For example,
+when an agent needs to be send somewhere then a path to that location should
+be planned which is done by a separate agent. Once this path finding agent
+responds with a path then the mothership needs to forward it on to the right
+agent. Because multiple paths can be planned at the same time it needs to keep
+track of which path needs to be forwarded to the which agent. This kind of
+bookkeeping is what makes the monolithic supervisor complicated.
+
+The distributed supervisor method is harder to implement because more
+communication is needed between the different agents. This means that there are
+more moving parts, but they are also smaller than with the monolithic
+mothership. More care needs to be taken to implement this and make all the
+agents communicate with each other correctly. There is also the complication
+that agents need to send confirmation to the supervisor whenever they receive
+an order, it is sometimes possible that they are not able to execute this order
+and thus they need to notify the supervisor to issue it again later.
+
 \subsection{Relevance}
 
 With our system we got a better insight on how to incorporate information from
