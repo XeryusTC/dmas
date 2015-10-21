@@ -1,8 +1,8 @@
 Our simulation consists of a set of agents that try to explore a randomly
-generated maze, these agents are meant to simulate robots in the real world.
+generated maze, these agents are meant to simulate robots in the real world. 
 They communicate with a set agents that act as soft bots in web services. These
 soft bots support the robots in accomplishing their task to rescue people from
-the maze.
+the maze. For communication between the agents we use SPADE \footnote{https://pypi.python.org/pypi/SPADE} as our top layer.
 
 \subsection{Simulation Model}
 The simulation consists of two web services, two types of robots and a
@@ -18,16 +18,22 @@ areas of the map that have unexplored corridors. The supervisor also makes sure
 that the search bots are not all at the some location but explore different
 parts of the map.
 
-\subsubsection{Data Store}
-The data store represents a web service that allows you to store raw data. It
-can be updated and queried like a regular database.
+\subsubsection{Data Store agent}
+The data store agent represents a web service that allows you to store raw data in our database. It can be updated and queried like a regular database.  
 
-\subsubsection{Path planner}
+\subsubsection{Path planner agent}
 The path planner represents a web service that uses the A* algorithm
 \cite{astar} to plan a route through a grid based maze, such as
-\cite{astarweb}.
+\cite{astarweb}. The pseudocode for A* is shown in figure \ref{fig:psuedocode} .
 
-\subsubsection{Search robots}
+\begin{figure}[h]
+	\centering
+		\includegraphics[width=6cm]{Astar}
+	\caption{A* pseudocode}
+	\label{fig:pseudocode}
+\end{figure}
+
+\subsubsection{Search robot agents}
 The search bots are robots that are simple platforms with some sensors. They
 can be thought of as the eyes of the system, these agents are also able to move
 around the maze quickly. This makes them ideal for searching through buildings.
@@ -37,7 +43,7 @@ to travel to and explore. If they get stuck in a dead end they will request a
 new search location from the supervisor. They will then ask the path planning
 service to return a route to get to the new search location.
 
-\subsubsection{Supervisor}
+\subsubsection{Supervisor agent}
 The Supervisor is the central part of the system that makes sure that all
 the components work together. It manages most of the resources and it keeps
 track of where robots are. It also manages all the search robots and makes sure
@@ -71,3 +77,18 @@ The definition for better is the time it took to rescue the targets.  The
 time will be measured from the start of the simulation. Because the maze is
 randomly generated, the simulation will be ran several times for each
 combination of supervisor and number of searchers.
+
+
+\begin{figure}[h]
+	\centering
+		\includegraphics[width=6cm]{mothership}
+	\caption{Mothership overview}
+	\label{fig:mothership}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+		\includegraphics[width=6cm]{supervisor}
+	\caption{Supervisor overview}
+	\label{fig:supervisor}
+\end{figure}
