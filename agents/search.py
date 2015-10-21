@@ -79,7 +79,7 @@ class SearchAgent(spade.Agent.Agent):
                 if content[0] == "route":
                     route = eval(content[1])
                     if int(msg.getConversationId()) == self.myAgent.pathcnt:
-                        print(self.myAgent.name, "received route:", route)
+                        #print(self.myAgent.name, "received route:", route)
                         self.myAgent.route = route
                         self.myAgent.pathcnt += 1
                         self._exitcode = self.myAgent.TRANS_PATH_WALK
@@ -93,12 +93,13 @@ class SearchAgent(spade.Agent.Agent):
                             svmsg.setContent("visited {}".format(route[-1]))
                             self.myAgent.send(svmsg)
                     else:
-                        print(self.myAgent.name, "discarding route:", route,
-                                msg.getConversationId(), self.myAgent.pathcnt)
+                        pass
+                        #print(self.myAgent.name, "discarding route:", route,
+                                #msg.getConversationId(), self.myAgent.pathcnt)
                 elif content[0] == "destination":
                     planner = random.choice(self.myAgent.pf)
                     dest = eval(content[1])
-                    print(self.myAgent.name, "planning path to", dest)
+                    #print(self.myAgent.name, "planning path to", dest)
 
                     msg = spade.ACLMessage.ACLMessage()
                     msg.setPerformative(msg.REQUEST)
@@ -115,7 +116,7 @@ class SearchAgent(spade.Agent.Agent):
                     self.myAgent.send(reply)
             else:
                 if self.myAgent.waitPathTimer < 0:
-                    print(self.myAgent.name, "POSSIBLY STUCK, UNSTUCKING")
+                    #print(self.myAgent.name, "POSSIBLY STUCK, UNSTUCKING")
                     self.myAgent.waitPathTimer = None
                     self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
                 else:
@@ -155,7 +156,7 @@ class SearchAgent(spade.Agent.Agent):
 
             result = self.myAgent.searchService(dad)
             if len(result):
-                print(self.myAgent.name, "switching to mothership")
+                #print(self.myAgent.name, "switching to mothership")
                 self.myAgent.ship = result[0].getAID()
                 self.myAgent.sense()
                 self._exitcode = self.myAgent.TRANS_PICK_CORRIDOR
@@ -169,7 +170,7 @@ class SearchAgent(spade.Agent.Agent):
 
             result = self.myAgent.searchService(dad)
             if len(result):
-                print(self.myAgent.name, "switching to supervisor")
+                #print(self.myAgent.name, "switching to supervisor")
                 self.myAgent.sv = result[0].getAID()
                 self.myAgent.sense()
 

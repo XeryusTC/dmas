@@ -37,7 +37,7 @@ class PathFinder(spade.Agent.Agent):
                     rep.setPerformative("inform")
                 rep.setContent("route {}".format(path))
                 self.myAgent.send(rep)
-                print(self.myAgent.name, "path done", path)
+                #print(self.myAgent.name, "path done", path)
                 msg = self._receive(False)
 
         def motherpath(self, map, location, open):

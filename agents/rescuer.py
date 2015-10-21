@@ -22,9 +22,9 @@ class RescueAgent(spade.Agent.Agent):
                 if msg:
                     content = msg.getContent().split(' ', 1)
                     if content[0] == 'rescue':
-                        print(self.myAgent.name, "Going to rescue", self.myAgent.path)
                         self.myAgent.ret = [self.myAgent.position]
                         self.myAgent.target = eval(content[1])
+                        print(self.myAgent.name, "Going to rescue", self.myAgent.target)
                         self.myAgent.toggleOccupied()
                         self.myAgent.isrescueing = False
                         reply = msg.createReply()
