@@ -14,14 +14,14 @@ from gnui.gnui import GNUI
 from maze.maze import Maze
 import util
 
-def main(WIDTH, HEIGHT, SEARCHERS, RESCUERS):
+def main(WIDTH, HEIGHT, SEARCHERS, RESCUERS, targets = 5):
     manager = mp.Manager()
     searchm = manager.list()
     rescuem = manager.list()
     mazem   = manager.list()
     comq    = mp.Queue()
 
-    m = Maze(WIDTH, HEIGHT)
+    m = Maze(WIDTH, HEIGHT, targets)
     print(type(mazem), type(m.maze))
     mazem[:] = m.maze
     m.maze = mazem
