@@ -1,6 +1,49 @@
-Since we have not ran the experiment yet, we do not have results to
-present or interpret.
-%\subsection{Experimental Findings}
-%\subsection{Interpretation}
+We ran 10 trials of each configuration. Since some tests failed, we had to
+remove some data, so we were left with less trials per condition. The exact
+number of trials can be found in \autoref{tab:trial}.
 
+\subsection{Experimental findings}
 
+\begin{table}
+    \centering
+    \caption{Number of trials for each condition}
+    \label{tab:trial}
+    \begin{tabular}{l|ccc}
+        Rescue bots & 1 & 3 & 3 \\
+        Search bots & 1 & 3 & 6 \\ \hline
+        Mothership  & 7 & 8 & 9 \\
+        Supervisor  & 7 & 6 & 7
+    \end{tabular}
+\end{table}
+
+The result of our experiment can be found in \autoref{fig:barplot}. In the
+figure can be seen that there is no difference in mean rescue time between
+the mothership and the supervisor in any of our three conditions. We can
+also see that there is no difference between the conditions with 3 or 6
+searching agents. There is a difference between the 1 searching agent and 1
+rescuing agent versus the other two conditions, which can be explained by
+the lack of manpower in that condition. 
+
+\begin{figure}
+    \centering
+    \resizebox{\textwidth}{!}{
+        \input{barplot}}
+    \caption{The mean rescue time for the mothership and the supervisor
+        versus the different conditions. The error bars on the plot show
+        the standard error}
+    \label{fig:barplot}
+\end{figure}
+
+\subsection{Interpretation}
+From these results we can conclude that there is no difference between our
+two implementations of the central brain. We expect this is because the
+central brains both use the same strategy, and that strategy is not the
+optimal strategy for this problem. This means that there are other
+bottlenecks in both implementations that slow the simulation down more
+than the communication between the agents. 
+
+Another explanation for why we didn't see this effect might be that during our
+testing we did not stress the system enough. This means we should repeat
+the experiment with a heavier load and see if that changes the results.
+However, on our current test machine, running that simulation would take to
+much time. 
