@@ -86,7 +86,7 @@ class Mothership(spade.Agent.Agent):
                         new = eval(sc[1])
                         for loc in new:
                             self.myAgent.addOpen(loc[:2])
-                            if loc[2] == maze.TARGET and loc[:2] not in self.myAgent.found:
+                            if loc[2] == maze.TARGET and loc[:2] not in self.myAgent.saved:
                                 self.myAgent.targets.add(loc[:2])
                                 print(self.myAgent.name, self.myAgent.targets)
                 elif perf == "request":
@@ -162,6 +162,13 @@ class Mothership(spade.Agent.Agent):
                                                'map': None, 'additional':2}
                         dbMsg.setContent("MAP")
                         self.myAgent.send(dbMsg)
+                elif perf == "failure":
+                    content = msg.getContent().split(' ',1)
+                    if content[0] == 'rescue':
+                        target = eval(content[1])
+                        print(self.myAgent.name, "rescuer failed to rescue target at", target)
+                        self.myAgent.saved.discard(target[0])
+                        self.myAgent.targets.add(target[0])
 
             if len(self.myAgent.targets) > 0:
                 # Find all available rescuers
@@ -180,7 +187,7 @@ class Mothership(spade.Agent.Agent):
                     rMsg.setOntology("rescuer")
                     rMsg.addReceiver(rescuer)
                     target = self.myAgent.targets.pop()
-                    self.myAgent.found.add(target)
+                    self.myAgent.saved.add(target)
                     rMsg.setContent("rescue {}".format([target]))
                     self.myAgent.send(rMsg)
                     print(self.myAgent.name, "send", rescuer.getName(), "to", target)
@@ -212,7 +219,7 @@ class Mothership(spade.Agent.Agent):
         self.open    = set()
         self.queue = {}
         self.targets = set()
-        self.found = set()
+        self.saved = set()
 
         self.addBehaviour(self.RegisterServicesBehav(), None)
 

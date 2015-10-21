@@ -1,6 +1,7 @@
 from __future__ import print_function
 import random
 import spade
+import time
 
 from maze import maze
 from util import backtrace
@@ -33,6 +34,7 @@ class RescueAgent(spade.Agent.Agent):
                                 'end': self.myAgent.target}
                         reply.setContent("route {}".format(cont))
                         self.myAgent.send(reply)
+                        self.myAgent.waittime = time.time()
                     elif content[0] == 'target':
                         self.myAgent.toggleOccupied()
                         target = eval(content[1])
@@ -53,6 +55,7 @@ class RescueAgent(spade.Agent.Agent):
                     content = msg.getContent().split(' ', 1)
                     if content[0] == 'route':
                         path = eval(content[1])
+                        self.myAgent.waittime = float("inf")
                         if len(path):
                             self.myAgent.path = eval(content[1])
                             print(self.myAgent.name, "Going to rescue", self.myAgent.path)
@@ -78,8 +81,24 @@ class RescueAgent(spade.Agent.Agent):
                         reply.addReceiver(self.myAgent.sv)
                         reply.setContent('nopath {}'.format(eval(content[1])))
                         self.myAgent.send(reply)
+                    elif content[0] == 'rescue':
+                        reply = msg.createReply()
+                        reply.setPerformative(reply.FAILURE)
+                        reply.setContent('rescue {}'.format(eval(content[1])))
+                        self.myAgent.send(reply)
                     else:
                         print(self.myAgent.name, "GOT UNKOWN MESSAGE", msg.getContent())
+                elif not self.myAgent.sv:
+                    if time.time() - self.myAgent.waittime >= 4:
+                        msg = spade.ACLMessage.ACLMessage()
+                        msg.setPerformative(msg.FAILURE)
+                        msg.setOntology('rescuer')
+                        msg.addReceiver(self.myAgent.ship)
+                        msg.setContent('rescue {}'.format(self.myAgent.target))
+                        self.myAgent.send(msg)
+                        self.myAgent.toggleOccupied()
+                        self.myAgent.waittime  = float("inf")
+                        
             elif self.myAgent.isrescueing: # go rescue
                 if len(self.myAgent.path) > 0:
                     dst = self.myAgent.path[0]
@@ -178,6 +197,7 @@ class RescueAgent(spade.Agent.Agent):
         self.x = 1
         self.y = 1
         self.isrescueing = False
+        self.waittime = float("inf")
 
         self.occupied = True
         self.sd = spade.DF.ServiceDescription()
