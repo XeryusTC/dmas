@@ -9,10 +9,12 @@ flow so navigation systems can try to control the flow.
 
 \subsection{Problem description} 
 
-A global system where these separate systems can communicate and share information
-is not implemented yet. A multi-agent system would be a good platform to
-build such a system on, since it allows services to negotiate terms for
-co-operation and advertise their services. 
+A global system where these separate systems can communicate, share information
+and work together on their goals is not implemented yet. A multi-agent system
+would be a good platform to build such a system on, since it allows services to
+negotiate terms for co-operation and advertise their services. It also supplies
+a single standard of communication protocols so that different services know
+how to talk to each other.
 
 %In this particular paper we are describing
 %a situation where various robots work together under a common coordinator.
@@ -30,15 +32,15 @@ co-operation and advertise their services.
 \subsection{State of the Art} 
 
 Such a system has been implemented before in \cite{intframe}. This system
-consisted of multiple physical agents, one web service that did path
-planning and a supervisor that coordinated the interaction between the two.
+consisted of multiple physical agents, one web service that did path planning
+and a central brain that coordinated the interaction between the other agents.
 Since there was only one web service to chose from, the system did not do
 any form of negotiation or service discovery yet. They also used one
 ontology for all communication and information.
 
 \subsection{New Idea} 
 
-In \cite{intframe} the supervisor agent was a monolithic agent, while its
+In \cite{intframe} the central brain agent was a monolithic agent, while its
 tasks could be separated into multiple agents. This would have as downside
 that this becomes a single bottleneck for communication, since it is the
 component that is guiding all communication. The upside of this system is
@@ -46,13 +48,13 @@ that one agent has all the state needed to coordinate the rest. We do
 suspect that this upside does not outweigh the downsides and want to test
 this.
 
-In order to test this, we will create both a monolithic supervisor, the
+In order to test this, we will create both a monolithic central brain, the
 mothership; and a distributed agent, where all the responsibilities are
 divided among more components. This will allow us to test these two
 different architectures. In the case of the distributed agent most
 communication will go from the robots to special forwarders that
 communicate with the web services. This means that agents will only communicate
-with the supervisor when they need services it is responsible for, relieving
+with the central brain when they need services it is responsible for, relieving
 the stress from this part of the system.
 
 Another change is that the services discoverable instead of hard coding them
@@ -61,7 +63,7 @@ service so this wouldn't strictly be necessary. A third change that we want to
 make is in the environment. In \cite{intframe} the environment was simplistic,
 whereas we want to use a more complicated maze. This will also increase the
 stress on the system, making it easier to test the different architectures
-for the supervisor. 
+for the central brain. 
 
 % The main procedure is as follows; first search robots
 % are sent into the uncharted maze. As they move around the immediate
