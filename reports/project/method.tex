@@ -89,6 +89,15 @@ visited yet to the path planner. The planner will return a path if it is
 possible. The central brain then sends this path to the searcher so it can
 resume exploring.
 
+Whenever the searcher agents find a target in the maze, the central brain
+get notified. It will then add it to its list of targets. Since it is
+possible for two searcher agents to discover the same target, it also keeps
+a list of targets that are already being retrieved. While the central brain
+still has targets left, it sends a message to a rescuer agent that is not
+occupied with the target location. The rescuer will then request a path,
+from the mothership in the monolithic case and from the path planner in the
+distributed case, and retrieve this target.
+
 \subsection{Experimental design}
 The central brain is an important link in our system, and we would want it to
 be as robust as possible. Therefore we would want to know whether the
